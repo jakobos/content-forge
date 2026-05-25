@@ -19,9 +19,20 @@ ContentForge is an Astro 6 / React 19 web app with Supabase auth, deployed on Cl
 - `npm run lint:fix` -- auto-fix lint issues
 - `npm run format` -- Prettier (double quotes, semicolons, 120-char width)
 - `npx astro sync` -- regenerate Astro types after env schema or content changes
-- `npx wrangler deploy` -- deploy to Cloudflare Workers
+- `npm run deploy` -- build + deploy to Cloudflare Workers (emergency manual deploy)
+- `npx wrangler secret put <KEY>` -- set a runtime secret on the Worker
 
 CI gate (`@.github/workflows/ci.yml`): `astro sync` -> `lint` -> `build`. No test step. Pre-commit hook runs `lint-staged` via Husky.
+
+## Deployment
+
+- **Production URL:** https://content-forge.jakub-skwara-js.workers.dev
+- **Auto-deploy:** Push to `master` triggers Cloudflare Workers Builds (build + deploy)
+- **Preview deploys:** Branch pushes create preview versions at `https://<version-id>-content-forge.jakub-skwara-js.workers.dev`
+- **CI on PRs:** GitHub Actions runs `astro sync` > `lint` > `build` as a merge gate
+- **Manual deploy:** `npm run deploy` (builds then deploys via wrangler)
+- **Rollback:** `npx wrangler rollback [version-id]` (list versions with `npx wrangler deployments list`)
+- **Secrets:** Managed via `npx wrangler secret put <KEY>` (runtime-only, encrypted at rest)
 
 ## Project Structure
 
