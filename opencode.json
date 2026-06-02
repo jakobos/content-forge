@@ -26,5 +26,12 @@
     "edit": {
       "*": "allow"
     }
+  },
+  "mcp": {
+    "linear-mcp-server": {
+      "type": "local",
+      "command": ["npx", "-y", "mcp-remote", "https://mcp.linear.app/mcp"],
+      "enabled": true
+    }
   }
 }
