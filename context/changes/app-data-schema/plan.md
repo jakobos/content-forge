@@ -407,12 +407,12 @@ None -- schema-only change. Integration testing happens via `supabase db push` s
 
 #### Automated
 
-- [x] 3.1 `npx astro sync` completes without error
-- [x] 3.2 `npm run lint` passes
-- [x] 3.3 `npm run build` succeeds
-- [x] 3.4 `Database["public"]["Tables"]` resolves with all 9 table names
+- [x] 3.1 `npx astro sync` completes without error — 7e1b4d5
+- [x] 3.2 `npm run lint` passes — 7e1b4d5
+- [x] 3.3 `npm run build` succeeds — 7e1b4d5
+- [x] 3.4 `Database["public"]["Tables"]` resolves with all 9 table names — 7e1b4d5
 
 #### Manual
 
-- [x] 3.5 Editor autocomplete shows all table names on `.from("`
-- [x] 3.6 Auth signin/signup flow works on dev server (unbroken by supabase.ts change)
+- [x] 3.5 Editor autocomplete shows all table names on `.from("` — 7e1b4d5
+- [x] 3.6 Auth signin/signup flow works on dev server (unbroken by supabase.ts change) — 7e1b4d5
