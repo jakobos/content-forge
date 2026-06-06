@@ -298,47 +298,47 @@ No schema changes needed -- F-01 already provides all required tables and column
 
 #### Manual Verification:
 
-- [ ] 1.5 Unauthenticated users visiting /campaigns get redirected to /auth/signin
-- [ ] 1.6 Topbar shows "Campaigns" link when signed in
-- [ ] 1.7 Topbar does not show "Campaigns" link when signed out
-- [ ] 1.8 Topbar appears on all pages (homepage, dashboard, auth pages, future campaign pages)
+- [x] 1.5 Unauthenticated users visiting /campaigns get redirected to /auth/signin
+- [x] 1.6 Topbar shows "Campaigns" link when signed in
+- [x] 1.7 Topbar does not show "Campaigns" link when signed out
+- [x] 1.8 Topbar appears on all pages (homepage, dashboard, auth pages, future campaign pages)
 
 ### Phase 2: Campaign List & Create
 
 #### Automated Verification:
 
-- [x] 2.1 Lint passes: npm run lint
-- [x] 2.2 Build passes: npm run build
-- [x] 2.3 Files exist: src/pages/campaigns/index.astro, src/pages/campaigns/new.astro, src/components/campaigns/CampaignCreateForm.tsx, src/pages/api/campaigns/index.ts
+- [x] 2.1 Lint passes: npm run lint — b68e90e
+- [x] 2.2 Build passes: npm run build — b68e90e
+- [x] 2.3 Files exist: src/pages/campaigns/index.astro, src/pages/campaigns/new.astro, src/components/campaigns/CampaignCreateForm.tsx, src/pages/api/campaigns/index.ts — b68e90e
 
 #### Manual Verification:
 
-- [ ] 2.4 /campaigns shows empty state with "Create your first campaign" CTA when no campaigns exist
-- [ ] 2.5 Clicking CTA navigates to /campaigns/new
-- [ ] 2.6 Creating a campaign with title + goal + description redirects to /campaigns/[id]
-- [ ] 2.7 Creating a campaign with only title (goal/description blank) works
-- [ ] 2.8 Submitting without title shows client-side validation error
-- [ ] 2.9 New campaign appears in the list at /campaigns with status "draft"
-- [ ] 2.10 Campaign cards show title, goal snippet, status badge
+- [x] 2.4 /campaigns shows empty state with "Create your first campaign" CTA when no campaigns exist
+- [x] 2.5 Clicking CTA navigates to /campaigns/new
+- [x] 2.6 Creating a campaign with title + goal + description redirects to /campaigns/[id]
+- [x] 2.7 Creating a campaign with only title (goal/description blank) works
+- [x] 2.8 Submitting without title shows client-side validation error
+- [x] 2.9 New campaign appears in the list at /campaigns with status "draft"
+- [x] 2.10 Campaign cards show title, goal snippet, status badge
 
 ### Phase 3: Campaign Detail & Document CRUD
 
 #### Automated Verification:
 
-- [ ] 3.1 Lint passes: npm run lint
-- [ ] 3.2 Build passes: npm run build
-- [ ] 3.3 Files exist: src/pages/campaigns/[id].astro, src/components/campaigns/AddSourceDocumentForm.tsx, src/components/campaigns/AddInsightForm.tsx, src/pages/api/campaigns/[id]/documents.ts
+- [x] 3.1 Lint passes: npm run lint
+- [x] 3.2 Build passes: npm run build
+- [x] 3.3 Files exist: src/pages/campaigns/[id].astro, src/components/campaigns/AddSourceDocumentForm.tsx, src/components/campaigns/AddInsightForm.tsx, src/pages/api/campaigns/[id]/documents.ts
 
 #### Manual Verification:
 
-- [ ] 3.4 Campaign detail page shows campaign title, goal, description, status
-- [ ] 3.5 Page shows two sections: "Source Documents" and "User Insights"
-- [ ] 3.6 Empty sections show contextual empty state
-- [ ] 3.7 Adding a source document (title + content + URL) shows it in the Source Documents section
-- [ ] 3.8 Adding a user insight (title + content) shows it in the User Insights section
-- [ ] 3.9 Character count displays correctly and prevents submission over 20,000 chars
-- [ ] 3.10 Submitting without required fields shows validation errors
-- [ ] 3.11 Attempting to access another user's campaign redirects to /campaigns
-- [ ] 3.12 Documents display title and a content preview (first ~200 chars truncated)
-- [ ] 3.13 Success feedback appears after adding a document
-- [ ] 3.14 Document counts update correctly on campaign list page
+- [x] 3.4 Campaign detail page shows campaign title, goal, description, status
+- [x] 3.5 Page shows two sections: "Source Documents" and "User Insights"
+- [x] 3.6 Empty sections show contextual empty state
+- [x] 3.7 Adding a source document (title + content + URL) shows it in the Source Documents section
+- [x] 3.8 Adding a user insight (title + content) shows it in the User Insights section
+- [x] 3.9 Character count displays correctly and prevents submission over 20,000 chars
+- [x] 3.10 Submitting without required fields shows validation errors
+- [x] 3.11 Attempting to access another user's campaign redirects to /campaigns
+- [x] 3.12 Documents display title and a content preview (first ~200 chars truncated)
+- [x] 3.13 Success feedback appears after adding a document
+- [x] 3.14 Document counts update correctly on campaign list page
