@@ -383,25 +383,25 @@ None -- schema-only change. Integration testing happens via `supabase db push` s
 
 #### Automated
 
-- [x] 1.1 `npx supabase migration list` connects to linked project without error
-- [x] 1.2 `npm run db:push` runs without error
+- [x] 1.1 `npx supabase migration list` connects to linked project without error — 84b4c16
+- [x] 1.2 `npm run db:push` runs without error — 84b4c16
 
 #### Manual
 
-- [ ] 1.3 Supabase dashboard confirms project is linked
+- [x] 1.3 Supabase dashboard confirms project is linked — 84b4c16
 
 ### Phase 2: Core Schema Migration
 
 #### Automated
 
-- [ ] 2.1 `npm run db:push` applies migration without error
-- [ ] 2.2 `npx supabase migration list` shows migration as applied
+- [x] 2.1 `npm run db:push` applies migration without error
+- [x] 2.2 `npx supabase migration list` shows migration as applied
 
 #### Manual
 
-- [ ] 2.3 Dashboard Table Editor shows all 9 tables with correct columns
-- [ ] 2.4 Invalid enum insert fails
-- [ ] 2.5 FK cascade works (delete campaign -> deletes documents and ideas)
+- [x] 2.3 Dashboard Table Editor shows all 9 tables with correct columns
+- [x] 2.4 Invalid enum insert fails
+- [x] 2.5 FK cascade works (delete campaign -> deletes documents and ideas)
 
 ### Phase 3: TypeScript Type Generation & Verification
 

@@ -1,0 +1,1 @@
+INSERT INTO campaigns (user_id, title, status) VALUES (gen_random_uuid(), 'test', 'bogus');
