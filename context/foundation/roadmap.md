@@ -3,7 +3,7 @@ project: ContentForge
 version: 1
 status: draft
 created: 2026-05-31
-updated: 2026-05-31
+updated: 2026-06-02
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -31,16 +31,17 @@ Solo experts who build personal brands through social media have no tool that br
 |---|---|---|---|---|---|
 | F-01 | app-data-schema | (foundation) Supabase application tables landed for all domain entities | -- | FR-004, FR-008, FR-012 | ready |
 | F-02 | ai-generation-pipeline | (foundation) AI generation infrastructure operational | F-01 | FR-012, FR-014, FR-021 | proposed |
-| S-01 | campaign-document-crud | create campaigns and add documents | F-01 | US-01, FR-004, FR-005, FR-008, FR-009 | proposed |
+| F-03 | data-authorization | (foundation) RLS policies and API authorization enforced on all application tables | F-01 | Access Control, Guardrails | proposed |
+| S-01 | campaign-document-crud | create campaigns and add documents | F-01, F-03 | US-01, FR-004, FR-005, FR-008, FR-009 | proposed |
 | S-02 | first-gated-generation | generate structured post ideas from campaign documents (hardcoded profile) | F-01, F-02, S-01 | US-01, FR-012, FR-014 | proposed |
 | S-03 | idea-review-and-copy | review ideas (accept/decline), copy in markdown | S-02 | FR-015, FR-016 | proposed |
-| S-04 | business-profile-wizard | complete and edit a business profile that influences generation | F-01 | FR-001, FR-002, FR-003 | proposed |
+| S-04 | business-profile-wizard | complete and edit a business profile that influences generation | F-01, F-03 | FR-001, FR-002, FR-003 | proposed |
 | S-05 | manual-idea-creation | describe an idea and get a structured version enriched with campaign documents | F-02, S-01 | US-02, FR-013 | proposed |
 | S-06 | idea-regeneration | regenerate ideas with optional improvement hints | F-02, S-02 | FR-017, FR-018 | proposed |
 | S-07 | campaign-document-lifecycle | manage campaign and document lifecycles with full state machines | S-01 | FR-006, FR-007, FR-010, FR-011 | proposed |
 | S-08 | publication-tracking | record publication details on published ideas | S-03 | FR-019 | proposed |
-| S-09 | background-ops-status | see status of pending operations, get notified on completion/failure | F-02 | FR-021 | proposed |
-| S-10 | account-deletion | permanently delete account and all associated data | F-01 | FR-020 | proposed |
+| S-09 | background-ops-status | see status of pending operations, get notified on completion/failure | F-02, F-03 | FR-021 | proposed |
+| S-10 | account-deletion | permanently delete account and all associated data | F-01, F-03 | FR-020 | proposed |
 
 ## Streams
 
@@ -48,9 +49,9 @@ Navigation aid -- groups items that share a Prerequisites chain. Canonical order
 
 | Stream | Theme | Chain | Note |
 |---|---|---|---|
-| A | Core generation | `F-01` → `S-01` → `S-02` → `S-03` → `S-08` | North star path -- fastest route to proving the transformation works. |
-| B | AI extensions | `F-02` → `S-05` / `S-06` / `S-09` | AI pipeline and downstream features; joins Stream A at `S-02` via `F-02` prerequisite. |
-| C | Profile, lifecycle & account | `S-04` / `S-07` / `S-10` | Independent from generation; `S-07` joins Stream A at `S-01`. |
+| A | Core generation | `F-01` → `F-03` → `S-01` → `S-02` → `S-03` → `S-08` | North star path -- auth gates every data slice; fastest route to proving the transformation works. |
+| B | AI extensions | `F-02` → `S-05` / `S-06` / `S-09` | AI pipeline and downstream features; joins Stream A at `S-02` via `F-02` prerequisite. `S-09` also requires `F-03`. |
+| C | Profile, lifecycle & account | `S-04` / `S-07` / `S-10` | `S-04` and `S-10` require `F-03` from Stream A; `S-07` joins Stream A at `S-01`. |
 
 ## Baseline
 
@@ -71,7 +72,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** (foundation) Supabase application tables landed for all domain entities -- business profiles, campaigns, documents (with versions), ideas, fragment references; pgvector extension enabled for document embeddings.
 - **Change ID:** app-data-schema
 - **PRD refs:** FR-004, FR-008, FR-012
-- **Unlocks:** S-01, S-02, S-03, S-04, S-05, S-06, S-07, S-08, S-09, S-10
+- **Unlocks:** F-03, S-01, S-02, S-03, S-04, S-05, S-06, S-07, S-08, S-09, S-10
 - **Prerequisites:** --
 - **Parallel with:** --
 - **Blockers:** --
@@ -86,10 +87,23 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **PRD refs:** FR-012, FR-014, FR-021
 - **Unlocks:** S-02, S-05, S-06, S-09
 - **Prerequisites:** F-01
-- **Parallel with:** S-01, S-04, S-10
+- **Parallel with:** F-03, S-01, S-04, S-10
 - **Blockers:** --
 - **Unknowns:** --
 - **Risk:** Prompt engineering quality directly determines whether generated ideas are on-brand and fragment-referenced. Early testing with real documents is essential; bad prompts discovered late invalidate the north star.
+- **Status:** proposed
+
+### F-03: Data authorization
+
+- **Outcome:** (foundation) Row-Level Security policies enabled on all application tables ensuring users access only their own data; API endpoint authorization patterns established so every server route verifies ownership before returning or mutating rows.
+- **Change ID:** data-authorization
+- **PRD refs:** Access Control, Guardrails (source material privacy)
+- **Unlocks:** S-01, S-04, S-09, S-10 (directly); all other slices transitively
+- **Prerequisites:** F-01
+- **Parallel with:** F-02
+- **Blockers:** --
+- **Unknowns:** --
+- **Risk:** RLS policies that are too permissive ship a data leak; policies that are too restrictive break every downstream slice silently (queries return empty sets instead of errors). Must be verified with multi-user test scenarios before any slice lands.
 - **Status:** proposed
 
 ## Slices
@@ -99,7 +113,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** user can create campaigns (with goal/theme), view a campaign list, add source documents (title + text + optional link) and user insights (title + text) to a campaign
 - **Change ID:** campaign-document-crud
 - **PRD refs:** US-01, FR-004, FR-005, FR-008, FR-009
-- **Prerequisites:** F-01
+- **Prerequisites:** F-01, F-03
 - **Parallel with:** F-02, S-04, S-10
 - **Blockers:** --
 - **Unknowns:**
@@ -137,7 +151,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** user can complete a business profile wizard (brand goal, audience, tone, archetype, keywords, formats, resources, pain points, transformation, delivered value) and edit it afterward; profile data feeds into idea generation instead of hardcoded defaults
 - **Change ID:** business-profile-wizard
 - **PRD refs:** FR-001, FR-002, FR-003
-- **Prerequisites:** F-01
+- **Prerequisites:** F-01, F-03
 - **Parallel with:** S-01, S-10, F-02
 - **Blockers:** --
 - **Unknowns:** --
@@ -197,7 +211,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** user can see the status of all pending operations (profile processing, document ingestion, idea generation, idea regeneration) and is notified when each completes or fails; failed operations can be retried
 - **Change ID:** background-ops-status
 - **PRD refs:** FR-021
-- **Prerequisites:** F-02
+- **Prerequisites:** F-02, F-03
 - **Parallel with:** S-01, S-04, S-05, S-07
 - **Blockers:** --
 - **Unknowns:** --
@@ -209,7 +223,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Outcome:** user can permanently delete their account and all associated data (profile, campaigns, documents, ideas)
 - **Change ID:** account-deletion
 - **PRD refs:** FR-020
-- **Prerequisites:** F-01
+- **Prerequisites:** F-01, F-03
 - **Parallel with:** S-01, S-04, F-02
 - **Blockers:** --
 - **Unknowns:** --
@@ -222,7 +236,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 |---|---|---|---|---|
 | F-01 | app-data-schema | Design and deploy Supabase application data schema | yes | Run `/10x-plan app-data-schema` |
 | F-02 | ai-generation-pipeline | Build AI generation pipeline with async processing | no | Blocked by F-01 |
-| S-01 | campaign-document-crud | Campaign & document CRUD pages | no | Blocked by F-01 |
+| F-03 | data-authorization | RLS policies and API authorization on all application tables | no | Blocked by F-01 |
+| S-01 | campaign-document-crud | Campaign & document CRUD pages | no | Blocked by F-01, F-03 |
 | S-02 | first-gated-generation | First gated generation (north star) | no | Blocked by F-01, F-02, S-01 |
 | S-03 | idea-review-and-copy | Idea review lifecycle & markdown copy | no | Blocked by S-02 |
 | S-04 | business-profile-wizard | Business profile wizard & edit form | no | Blocked by F-01 |
