@@ -291,10 +291,10 @@ No schema changes needed -- F-01 already provides all required tables and column
 
 #### Automated Verification:
 
-- [x] 1.1 shadcn components installed: files exist at src/components/ui/{card,input,textarea,badge,label}.tsx
-- [x] 1.2 Lint passes: npm run lint
-- [x] 1.3 Build passes: npm run build
-- [x] 1.4 Middleware updated: "/campaigns" in PROTECTED_ROUTES
+- [x] 1.1 shadcn components installed: files exist at src/components/ui/{card,input,textarea,badge,label}.tsx — 4bdeb0b
+- [x] 1.2 Lint passes: npm run lint — 4bdeb0b
+- [x] 1.3 Build passes: npm run build — 4bdeb0b
+- [x] 1.4 Middleware updated: "/campaigns" in PROTECTED_ROUTES — 4bdeb0b
 
 #### Manual Verification:
 
@@ -307,9 +307,9 @@ No schema changes needed -- F-01 already provides all required tables and column
 
 #### Automated Verification:
 
-- [ ] 2.1 Lint passes: npm run lint
-- [ ] 2.2 Build passes: npm run build
-- [ ] 2.3 Files exist: src/pages/campaigns/index.astro, src/pages/campaigns/new.astro, src/components/campaigns/CampaignCreateForm.tsx, src/pages/api/campaigns/index.ts
+- [x] 2.1 Lint passes: npm run lint
+- [x] 2.2 Build passes: npm run build
+- [x] 2.3 Files exist: src/pages/campaigns/index.astro, src/pages/campaigns/new.astro, src/components/campaigns/CampaignCreateForm.tsx, src/pages/api/campaigns/index.ts
 
 #### Manual Verification:
 
