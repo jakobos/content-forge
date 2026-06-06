@@ -394,25 +394,25 @@ None -- schema-only change. Integration testing happens via `supabase db push` s
 
 #### Automated
 
-- [x] 2.1 `npm run db:push` applies migration without error
-- [x] 2.2 `npx supabase migration list` shows migration as applied
+- [x] 2.1 `npm run db:push` applies migration without error — 09a8b8c
+- [x] 2.2 `npx supabase migration list` shows migration as applied — 09a8b8c
 
 #### Manual
 
-- [x] 2.3 Dashboard Table Editor shows all 9 tables with correct columns
-- [x] 2.4 Invalid enum insert fails
-- [x] 2.5 FK cascade works (delete campaign -> deletes documents and ideas)
+- [x] 2.3 Dashboard Table Editor shows all 9 tables with correct columns — 09a8b8c
+- [x] 2.4 Invalid enum insert fails — 09a8b8c
+- [x] 2.5 FK cascade works (delete campaign -> deletes documents and ideas) — 09a8b8c
 
 ### Phase 3: TypeScript Type Generation & Verification
 
 #### Automated
 
-- [ ] 3.1 `npx astro sync` completes without error
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` succeeds
-- [ ] 3.4 `Database["public"]["Tables"]` resolves with all 9 table names
+- [x] 3.1 `npx astro sync` completes without error
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` succeeds
+- [x] 3.4 `Database["public"]["Tables"]` resolves with all 9 table names
 
 #### Manual
 
-- [ ] 3.5 Editor autocomplete shows all table names on `.from("`
-- [ ] 3.6 Auth signin/signup flow works on dev server (unbroken by supabase.ts change)
+- [x] 3.5 Editor autocomplete shows all table names on `.from("`
+- [x] 3.6 Auth signin/signup flow works on dev server (unbroken by supabase.ts change)
