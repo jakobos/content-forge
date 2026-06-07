@@ -558,26 +558,26 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes with all new files
-- [x] 2.2 `npm run build` passes
-- [x] 2.3 TypeScript compiles without errors
+- [x] 2.1 `npm run lint` passes with all new files — 728ae94
+- [x] 2.2 `npm run build` passes — 728ae94
+- [x] 2.3 TypeScript compiles without errors — 728ae94
 
 #### Manual
 
-- [x] 2.4 Provider can be instantiated with a test API key
-- [x] 2.5 `resolveProvider("openrouter:anthropic/claude-sonnet-4-20250514")` returns correct provider and model
+- [x] 2.4 Provider can be instantiated with a test API key — 728ae94
+- [x] 2.5 `resolveProvider("openrouter:anthropic/claude-sonnet-4-20250514")` returns correct provider and model — 728ae94
 
 ### Phase 3: Tools Interface
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes
-- [ ] 3.3 Tool JSON schemas are valid
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes
+- [x] 3.3 Tool JSON schemas are valid
 
 #### Manual
 
-- [ ] 3.4 `createToolRegistry()` registers both tools and `list()` returns definitions
+- [x] 3.4 `createToolRegistry()` registers both tools and `list()` returns definitions
 
 ### Phase 4: Embedding Pipeline
 
