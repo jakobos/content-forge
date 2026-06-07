@@ -429,7 +429,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_document_chunks: {
+        Args: {
+          query_embedding: string
+          match_threshold: number
+          match_count: number
+          filter_campaign_id?: string
+        }
+        Returns: {
+          id: string
+          document_version_id: string
+          chunk_index: number
+          chunk_text: string
+          similarity: number
+        }[]
+      }
+      search_document_chunks: {
+        Args: {
+          search_query: string
+          result_limit?: number
+          filter_campaign_id?: string
+        }
+        Returns: {
+          id: string
+          document_version_id: string
+          chunk_index: number
+          chunk_text: string
+          rank: number
+        }[]
+      }
     }
     Enums: {
       campaign_status: "draft" | "active" | "completed" | "archived"

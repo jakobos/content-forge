@@ -583,30 +583,30 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 4.1 `npm run lint` passes
-- [x] 4.2 `npm run build` passes
-- [x] 4.3 TypeScript types align with `document_embeddings` schema
+- [x] 4.1 `npm run lint` passes — 5b90973
+- [x] 4.2 `npm run build` passes — 5b90973
+- [x] 4.3 TypeScript types align with `document_embeddings` schema — 5b90973
 
 #### Manual
 
-- [x] 4.4 `chunkText()` produces reasonable paragraph-based chunks
-- [x] 4.5 `embedBatch()` returns 1536-dimensional arrays from OpenRouter
-- [x] 4.6 `embedDocument()` inserts rows into `document_embeddings`
+- [x] 4.4 `chunkText()` produces reasonable paragraph-based chunks — 5b90973
+- [x] 4.5 `embedBatch()` returns 1536-dimensional arrays from OpenRouter — 5b90973
+- [x] 4.6 `embedDocument()` inserts rows into `document_embeddings` — 5b90973
 
 ### Phase 5: Hybrid RAG Search
 
 #### Automated
 
-- [ ] 5.1 Migration applies cleanly
-- [ ] 5.2 `npm run lint` passes
-- [ ] 5.3 `npm run build` passes
-- [ ] 5.4 Database types regenerated successfully
+- [x] 5.1 Migration applies cleanly
+- [x] 5.2 `npm run lint` passes
+- [x] 5.3 `npm run build` passes
+- [x] 5.4 Database types regenerated successfully
 
 #### Manual
 
-- [ ] 5.5 `match_document_chunks` RPC returns ranked results
-- [ ] 5.6 `search_document_chunks` RPC returns FTS-ranked results
-- [ ] 5.7 Hybrid search returns merged results
+- [x] 5.5 `match_document_chunks` RPC returns ranked results
+- [x] 5.6 `search_document_chunks` RPC returns FTS-ranked results
+- [x] 5.7 Hybrid search returns merged results
 
 ### Phase 6: Agent Runner
 
