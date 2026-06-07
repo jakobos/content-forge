@@ -626,14 +626,14 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 7.1 `npx astro sync` completes
-- [x] 7.2 `npm run lint` passes
-- [x] 7.3 `npm run build` passes
+- [x] 7.1 `npx astro sync` completes — af06013
+- [x] 7.2 `npm run lint` passes — af06013
+- [x] 7.3 `npm run build` passes — af06013
 
 #### Manual
 
-- [x] 7.4 `POST /api/ai/embed` chunks and embeds document content
-- [x] 7.5 `POST /api/ai/search` returns hybrid search results
-- [x] 7.6 `POST /api/ai/generate` streams SSE events with tool calls and final output
-- [x] 7.7 `background_operations` rows created with correct status transitions
-- [x] 7.8 Error cases return structured JSON error responses
+- [x] 7.4 `POST /api/ai/embed` chunks and embeds document content — af06013
+- [x] 7.5 `POST /api/ai/search` returns hybrid search results — af06013
+- [x] 7.6 `POST /api/ai/generate` streams SSE events with tool calls and final output — af06013
+- [x] 7.7 `background_operations` rows created with correct status transitions — af06013
+- [x] 7.8 Error cases return structured JSON error responses — af06013
