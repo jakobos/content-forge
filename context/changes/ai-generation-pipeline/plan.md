@@ -571,27 +571,27 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes
-- [x] 3.3 Tool JSON schemas are valid
+- [x] 3.1 `npm run lint` passes — 113736e
+- [x] 3.2 `npm run build` passes — 113736e
+- [x] 3.3 Tool JSON schemas are valid — 113736e
 
 #### Manual
 
-- [x] 3.4 `createToolRegistry()` registers both tools and `list()` returns definitions
+- [x] 3.4 `createToolRegistry()` registers both tools and `list()` returns definitions — 113736e
 
 ### Phase 4: Embedding Pipeline
 
 #### Automated
 
-- [ ] 4.1 `npm run lint` passes
-- [ ] 4.2 `npm run build` passes
-- [ ] 4.3 TypeScript types align with `document_embeddings` schema
+- [x] 4.1 `npm run lint` passes
+- [x] 4.2 `npm run build` passes
+- [x] 4.3 TypeScript types align with `document_embeddings` schema
 
 #### Manual
 
-- [ ] 4.4 `chunkText()` produces reasonable paragraph-based chunks
-- [ ] 4.5 `embedBatch()` returns 1536-dimensional arrays from OpenRouter
-- [ ] 4.6 `embedDocument()` inserts rows into `document_embeddings`
+- [x] 4.4 `chunkText()` produces reasonable paragraph-based chunks
+- [x] 4.5 `embedBatch()` returns 1536-dimensional arrays from OpenRouter
+- [x] 4.6 `embedDocument()` inserts rows into `document_embeddings`
 
 ### Phase 5: Hybrid RAG Search
 
