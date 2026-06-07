@@ -612,28 +612,28 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 6.1 `npm run lint` passes
-- [x] 6.2 `npm run build` passes
+- [x] 6.1 `npm run lint` passes — 836fbbb
+- [x] 6.2 `npm run build` passes — 836fbbb
 
 #### Manual
 
-- [x] 6.3 Simple generation (no tools) completes and streams events
-- [x] 6.4 Tool call dispatch works and continues conversation
-- [x] 6.5 Max round-trip limit is respected
-- [x] 6.6 `parseStructuredOutput` validates correctly
+- [x] 6.3 Simple generation (no tools) completes and streams events — 836fbbb
+- [x] 6.4 Tool call dispatch works and continues conversation — 836fbbb
+- [x] 6.5 Max round-trip limit is respected — 836fbbb
+- [x] 6.6 `parseStructuredOutput` validates correctly — 836fbbb
 
 ### Phase 7: API Endpoints & Integration
 
 #### Automated
 
-- [ ] 7.1 `npx astro sync` completes
-- [ ] 7.2 `npm run lint` passes
-- [ ] 7.3 `npm run build` passes
+- [x] 7.1 `npx astro sync` completes
+- [x] 7.2 `npm run lint` passes
+- [x] 7.3 `npm run build` passes
 
 #### Manual
 
-- [ ] 7.4 `POST /api/ai/embed` chunks and embeds document content
-- [ ] 7.5 `POST /api/ai/search` returns hybrid search results
-- [ ] 7.6 `POST /api/ai/generate` streams SSE events with tool calls and final output
-- [ ] 7.7 `background_operations` rows created with correct status transitions
-- [ ] 7.8 Error cases return structured JSON error responses
+- [x] 7.4 `POST /api/ai/embed` chunks and embeds document content
+- [x] 7.5 `POST /api/ai/search` returns hybrid search results
+- [x] 7.6 `POST /api/ai/generate` streams SSE events with tool calls and final output
+- [x] 7.7 `background_operations` rows created with correct status transitions
+- [x] 7.8 Error cases return structured JSON error responses
