@@ -597,30 +597,30 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 5.1 Migration applies cleanly
-- [x] 5.2 `npm run lint` passes
-- [x] 5.3 `npm run build` passes
-- [x] 5.4 Database types regenerated successfully
+- [x] 5.1 Migration applies cleanly — 90be86d
+- [x] 5.2 `npm run lint` passes — 90be86d
+- [x] 5.3 `npm run build` passes — 90be86d
+- [x] 5.4 Database types regenerated successfully — 90be86d
 
 #### Manual
 
-- [x] 5.5 `match_document_chunks` RPC returns ranked results
-- [x] 5.6 `search_document_chunks` RPC returns FTS-ranked results
-- [x] 5.7 Hybrid search returns merged results
+- [x] 5.5 `match_document_chunks` RPC returns ranked results — 90be86d
+- [x] 5.6 `search_document_chunks` RPC returns FTS-ranked results — 90be86d
+- [x] 5.7 Hybrid search returns merged results — 90be86d
 
 ### Phase 6: Agent Runner
 
 #### Automated
 
-- [ ] 6.1 `npm run lint` passes
-- [ ] 6.2 `npm run build` passes
+- [x] 6.1 `npm run lint` passes
+- [x] 6.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 6.3 Simple generation (no tools) completes and streams events
-- [ ] 6.4 Tool call dispatch works and continues conversation
-- [ ] 6.5 Max round-trip limit is respected
-- [ ] 6.6 `parseStructuredOutput` validates correctly
+- [x] 6.3 Simple generation (no tools) completes and streams events
+- [x] 6.4 Tool call dispatch works and continues conversation
+- [x] 6.5 Max round-trip limit is respected
+- [x] 6.6 `parseStructuredOutput` validates correctly
 
 ### Phase 7: API Endpoints & Integration
 
