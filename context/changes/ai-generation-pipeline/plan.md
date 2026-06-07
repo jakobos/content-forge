@@ -546,26 +546,26 @@ Not applicable -- no test runner.
 
 #### Automated
 
-- [x] 1.1 `npx astro sync` completes without errors
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 `npx astro sync` completes without errors — 44096a2
+- [x] 1.2 `npm run lint` passes — 44096a2
+- [x] 1.3 `npm run build` passes — 44096a2
 
 #### Manual
 
-- [x] 1.4 `.env.example` contains all three env vars
+- [x] 1.4 `.env.example` contains all three env vars — 44096a2
 
 ### Phase 2: Provider Abstraction Layer
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes with all new files
-- [ ] 2.2 `npm run build` passes
-- [ ] 2.3 TypeScript compiles without errors
+- [x] 2.1 `npm run lint` passes with all new files
+- [x] 2.2 `npm run build` passes
+- [x] 2.3 TypeScript compiles without errors
 
 #### Manual
 
-- [ ] 2.4 Provider can be instantiated with a test API key
-- [ ] 2.5 `resolveProvider("openrouter:anthropic/claude-sonnet-4-20250514")` returns correct provider and model
+- [x] 2.4 Provider can be instantiated with a test API key
+- [x] 2.5 `resolveProvider("openrouter:anthropic/claude-sonnet-4-20250514")` returns correct provider and model
 
 ### Phase 3: Tools Interface
 
