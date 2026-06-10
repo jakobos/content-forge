@@ -35,7 +35,7 @@ function toResult(row: BusinessProfileRow): BusinessProfileResult {
  * Factory: create the get_business_profile tool bound to a Supabase client.
  * Call once during AI initialization (Phase 7 initializeAI).
  */
-export function createGetBusinessProfileTool(supabase: SupabaseClient<Database>): Tool {
+export function createGetBusinessProfileTool(supabase: SupabaseClient<Database>, userId: string): Tool {
   return {
     type: "sync",
 
@@ -46,30 +46,19 @@ export function createGetBusinessProfileTool(supabase: SupabaseClient<Database>)
         "Retrieve the user's business profile for brand-aligned generation. Contains tone of voice, target audience, keywords, archetype, and other brand settings. Call at the start of generation to ensure output matches the brand.",
       parameters: {
         type: "object",
-        properties: {
-          user_id: {
-            type: "string",
-            description: "UUID of the user whose business profile to retrieve",
-          },
-        },
-        required: ["user_id"],
+        properties: {},
+        required: [],
       },
     },
 
-    handler: async (args, _signal) => {
-      const { user_id } = args as { user_id?: string };
-
-      if (!user_id || typeof user_id !== "string") {
-        return { ok: false, error: "user_id is required and must be a string" };
-      }
-
+    handler: async (_args, _signal) => {
       try {
         const { data, error } = await supabase
           .from("business_profiles")
           .select(
             "tone_of_voice,audience,keywords,archetype,brand_goal,pain_points,delivered_value,transformation,preferred_formats",
           )
-          .eq("user_id", user_id)
+          .eq("user_id", userId)
           .maybeSingle();
 
         if (error) {
@@ -79,7 +68,7 @@ export function createGetBusinessProfileTool(supabase: SupabaseClient<Database>)
         if (!data) {
           return {
             ok: false,
-            error: `No business profile found for user ${user_id}. Hint: the user may not have completed their profile setup.`,
+            error: "No business profile found. Hint: the user may not have completed their profile setup.",
           };
         }
 

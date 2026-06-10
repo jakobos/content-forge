@@ -18,7 +18,7 @@ const DEFAULT_MAX_ROUND_TRIPS = 10;
 export function createAgentRunner(config: AgentRunnerConfig, context: AgentRunnerContext) {
   const maxRoundTrips = config.maxRoundTrips ?? DEFAULT_MAX_ROUND_TRIPS;
 
-  async function* run(initialInput: ProviderInputItem[]): AsyncGenerator<RunnerStreamEvent> {
+  async function* run(initialInput: ProviderInputItem[], signal?: AbortSignal): AsyncGenerator<RunnerStreamEvent> {
     // Resolve provider from "provider:model" string
     const resolved = resolveProvider(config.model);
     if (!resolved) {
@@ -50,6 +50,7 @@ export function createAgentRunner(config: AgentRunnerConfig, context: AgentRunne
         input: conversationHistory,
         tools: requestTools,
         temperature: config.temperature,
+        signal,
       };
 
       // Stream from provider and capture the final ProviderResponse
@@ -117,7 +118,7 @@ export function createAgentRunner(config: AgentRunnerConfig, context: AgentRunne
           arguments: fc.arguments,
         };
 
-        const result = await context.toolRegistry.execute(fc.name, fc.arguments);
+        const result = await context.toolRegistry.execute(fc.name, fc.arguments, signal);
 
         yield { type: "tool_call_end", callId: fc.callId, name: fc.name, result };
 

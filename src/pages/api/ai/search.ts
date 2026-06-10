@@ -56,14 +56,19 @@ export const POST: APIRoute = async (context) => {
   }
 
   try {
-    const ai = initializeAI({ openrouterApiKey: OPENROUTER_API_KEY, supabase });
+    const ai = initializeAI({
+      openrouterApiKey: OPENROUTER_API_KEY,
+      supabase,
+      userId: user.id,
+      campaignId: campaign_id,
+    });
     const results = await ai.searchService.search(query, campaign_id, { limit, strategy });
 
     return new Response(JSON.stringify({ results }), {
       headers: { "Content-Type": "application/json" },
     });
-  } catch (err) {
-    return jsonError(err instanceof Error ? err.message : "Search failed", 500);
+  } catch {
+    return jsonError("Search failed", 500);
   }
 };
 

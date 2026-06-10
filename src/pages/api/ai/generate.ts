@@ -3,7 +3,7 @@ import { z } from "zod";
 import { OPENROUTER_API_KEY } from "astro:env/server";
 import { createClient } from "@/lib/supabase";
 import { initializeAI } from "@/lib/ai";
-import { createSSEResponse, createSSEErrorResponse } from "@/lib/ai/streaming";
+import { createSSEResponse } from "@/lib/ai/streaming";
 import type { ProviderInputItem } from "@/lib/ai/providers";
 import type { RunnerStreamEvent } from "@/lib/ai/runner";
 
@@ -19,16 +19,16 @@ const BodySchema = z.object({
 export const POST: APIRoute = async (context) => {
   const user = context.locals.user;
   if (!user) {
-    return createSSEErrorResponse("Unauthorized");
+    return jsonError("Unauthorized", 401);
   }
 
   if (!OPENROUTER_API_KEY) {
-    return createSSEErrorResponse("AI not configured");
+    return jsonError("AI not configured", 503);
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return createSSEErrorResponse("Database not configured");
+    return jsonError("Database not configured", 503);
   }
 
   // Parse + validate body
@@ -36,14 +36,35 @@ export const POST: APIRoute = async (context) => {
   try {
     rawBody = (await context.request.json()) as unknown;
   } catch {
-    return createSSEErrorResponse("Invalid JSON body");
+    return jsonError("Invalid JSON body", 400);
   }
 
   const parsed = BodySchema.safeParse(rawBody);
   if (!parsed.success) {
-    return createSSEErrorResponse(`Invalid request: ${parsed.error.issues[0]?.message ?? "bad input"}`);
+    return jsonError(`Invalid request: ${parsed.error.issues[0]?.message ?? "bad input"}`, 400);
   }
   const { campaign_id, model, system_prompt, user_prompt } = parsed.data;
+
+  // Verify campaign ownership
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("id", campaign_id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (campaignError) {
+    return new Response(JSON.stringify({ ok: false, error: "Database error verifying campaign" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  if (!campaign) {
+    return new Response(JSON.stringify({ ok: false, error: "Campaign not found or access denied" }), {
+      status: 403,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Create background operation
   const { data: bgOp, error: bgOpError } = await supabase
@@ -58,10 +79,10 @@ export const POST: APIRoute = async (context) => {
     .single();
 
   if (bgOpError) {
-    return createSSEErrorResponse("Failed to create operation record");
+    return jsonError("Failed to create operation record", 500);
   }
 
-  const ai = initializeAI({ openrouterApiKey: OPENROUTER_API_KEY, supabase });
+  const ai = initializeAI({ openrouterApiKey: OPENROUTER_API_KEY, supabase, userId: user.id, campaignId: campaign_id });
   const runner = ai.createRunner({
     model: model ?? DEFAULT_MODEL,
     systemInstructions: system_prompt,
@@ -78,7 +99,7 @@ export const POST: APIRoute = async (context) => {
 
     let succeeded = false;
     try {
-      for await (const event of runner.run(input)) {
+      for await (const event of runner.run(input, context.request.signal)) {
         yield event;
         if (event.type === "runner_done") succeeded = true;
       }
@@ -98,3 +119,10 @@ export const POST: APIRoute = async (context) => {
 
   return createSSEResponse(trackedEvents());
 };
+
+function jsonError(message: string, status: number): Response {
+  return new Response(JSON.stringify({ ok: false, error: message }), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}

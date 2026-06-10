@@ -24,7 +24,14 @@ export interface AIContext {
  * Wire all AI subsystems together.
  * Call once per request. Registers the OpenRouter provider in the global registry.
  */
-export function initializeAI(config: { openrouterApiKey: string; supabase: SupabaseClient<Database> }): AIContext {
+export function initializeAI(config: {
+  openrouterApiKey: string;
+  supabase: SupabaseClient<Database>;
+  /** Required when the tool registry is used (generate endpoint). */
+  userId?: string;
+  /** Required when the tool registry is used (generate endpoint). */
+  campaignId?: string;
+}): AIContext {
   // Register the OpenRouter provider
   initializeProviders({ openrouterApiKey: config.openrouterApiKey });
 
@@ -45,15 +52,14 @@ export function initializeAI(config: { openrouterApiKey: string; supabase: Supab
     type: searchDocumentsTool.type,
     definition: searchDocumentsTool.definition,
     handler: async (args, _signal) => {
-      const { query, campaign_id, limit } = args as unknown as {
+      const { query, limit } = args as unknown as {
         query?: string;
-        campaign_id?: string;
         limit?: number;
       };
       if (!query) return { ok: false, error: "query is required" };
-      if (!campaign_id) return { ok: false, error: "campaign_id is required" };
+      if (!config.campaignId) return { ok: false, error: "Campaign context not available" };
       try {
-        const results = await searchService.search(query, campaign_id, { limit });
+        const results = await searchService.search(query, config.campaignId, { limit });
         return { ok: true, output: JSON.stringify(results) };
       } catch (err) {
         return { ok: false, error: err instanceof Error ? err.message : "Search failed" };
@@ -62,7 +68,7 @@ export function initializeAI(config: { openrouterApiKey: string; supabase: Supab
   };
 
   toolRegistry.register(realSearchDocumentsTool);
-  toolRegistry.register(createGetBusinessProfileTool(config.supabase));
+  toolRegistry.register(createGetBusinessProfileTool(config.supabase, config.userId ?? ""));
 
   return {
     provider,

@@ -19,16 +19,12 @@ export const searchDocumentsTool: Tool = {
           type: "string",
           description: "Natural-language search query",
         },
-        campaign_id: {
-          type: "string",
-          description: "UUID of the campaign whose documents to search",
-        },
         limit: {
           type: "number",
           description: "Maximum number of chunks to return (default 10, max 20)",
         },
       },
-      required: ["query", "campaign_id"],
+      required: ["query"],
     },
   },
 

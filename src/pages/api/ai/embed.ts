@@ -7,7 +7,7 @@ import { chunkText } from "@/lib/ai/embeddings";
 
 const BodySchema = z.object({
   document_version_id: z.uuid(),
-  content: z.string().min(1),
+  content: z.string().min(1).max(500_000),
 });
 
 export const POST: APIRoute = async (context) => {
@@ -38,6 +38,24 @@ export const POST: APIRoute = async (context) => {
     return jsonError(`Invalid request: ${parsed.error.issues[0]?.message ?? "bad input"}`, 400);
   }
   const { document_version_id, content } = parsed.data;
+
+  // Verify document version ownership via document_versions -> documents
+  const { data: docVersion, error: dvError } = await supabase
+    .from("document_versions")
+    .select("id, documents!inner(user_id)")
+    .eq("id", document_version_id)
+    .maybeSingle();
+
+  if (dvError) {
+    return jsonError("Database error verifying document version", 500);
+  }
+  if (!docVersion) {
+    return jsonError("Document version not found or access denied", 403);
+  }
+  const ownerDoc = docVersion.documents as { user_id: string } | null;
+  if (ownerDoc?.user_id !== user.id) {
+    return jsonError("Document version not found or access denied", 403);
+  }
 
   // Create background operation
   const { data: bgOp, error: bgOpError } = await supabase
@@ -71,14 +89,14 @@ export const POST: APIRoute = async (context) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Embedding failed";
+    const internalMessage = err instanceof Error ? err.message : "Embedding failed";
 
     await supabase
       .from("background_operations")
-      .update({ status: "failed", error_message: message, completed_at: new Date().toISOString() })
+      .update({ status: "failed", error_message: internalMessage, completed_at: new Date().toISOString() })
       .eq("id", bgOp.id);
 
-    return jsonError(message, 500);
+    return jsonError("Embedding failed", 500);
   }
 };
 
