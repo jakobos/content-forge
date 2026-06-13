@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
+import { OPENROUTER_API_KEY } from "astro:env/server";
 import { createClient } from "@/lib/supabase";
+import { createEmbeddingClient, createEmbeddingService } from "@/lib/ai/embeddings";
 
 const MAX_CONTENT = 20_000;
 const VALID_TYPES = ["source_document", "user_insight"] as const;
@@ -76,15 +78,64 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`${errorBase}${encodeURIComponent(docError.message)}`);
   }
 
-  // Insert initial document version
-  const { error: versionError } = await supabase.from("document_versions").insert({
-    document_id: doc.id,
-    version_number: 1,
-    content,
-  });
+  // Insert initial document version — select id so we can embed it
+  const { data: version, error: versionError } = await supabase
+    .from("document_versions")
+    .insert({
+      document_id: doc.id,
+      version_number: 1,
+      content,
+    })
+    .select("id")
+    .single();
 
   if (versionError) {
     return context.redirect(`${errorBase}${encodeURIComponent(versionError.message)}`);
+  }
+
+  // Auto-embed the new document version synchronously before redirecting.
+  // On Cloudflare Workers, code cannot run after the Response is returned, so
+  // we must await this before calling context.redirect(). Failures are swallowed
+  // so that document creation always succeeds.
+  if (OPENROUTER_API_KEY) {
+    // Track the embedding job in background_operations
+    const { data: bgOp } = await supabase
+      .from("background_operations")
+      .insert({
+        user_id: user.id,
+        type: "document_ingestion",
+        status: "in_progress",
+        started_at: new Date().toISOString(),
+        input_ref: { document_version_id: version.id },
+      })
+      .select("id")
+      .single();
+
+    try {
+      const embeddingClient = createEmbeddingClient(OPENROUTER_API_KEY);
+      const embeddingService = createEmbeddingService(supabase, embeddingClient);
+      await embeddingService.embedDocument(version.id, content);
+
+      // Mark completed
+      if (bgOp) {
+        await supabase
+          .from("background_operations")
+          .update({ status: "completed", completed_at: new Date().toISOString() })
+          .eq("id", bgOp.id);
+      }
+    } catch {
+      // Embedding failure must not block document creation
+      if (bgOp) {
+        await supabase
+          .from("background_operations")
+          .update({
+            status: "failed",
+            completed_at: new Date().toISOString(),
+            error_message: "Embedding failed",
+          })
+          .eq("id", bgOp.id);
+      }
+    }
   }
 
   return context.redirect(`/campaigns/${campaignId}?success=document_added`);
