@@ -1,11 +1,9 @@
 import { z } from "zod";
 
 export const SourceReferenceSchema = z.object({
-  /** Opaque ID echoed back from a search_documents result — copy verbatim for provenance. */
-  document_version_id: z.string().optional(),
-  /** Human-readable document title used as fallback when ID is absent. */
-  document_title: z.string(),
-  /** Direct quote snippet from the source document. */
+  /** Fragment tag (F1, F2, …) assigned by the server-side retrieval step. */
+  tag: z.string(),
+  /** Direct quote snippet from the source fragment. */
   quote_snippet: z.string(),
 });
 
@@ -21,7 +19,7 @@ export const IdeaSchema = z.object({
   storytelling_angle: z.string().optional(),
   target_audience_note: z.string().optional(),
   content_format_suggestion: z.string().optional(),
-  /** Source document references — at least one required per idea. */
+  /** Source fragment references — at least one required per idea. */
   source_references: z.array(SourceReferenceSchema).min(1),
 });
 
@@ -30,3 +28,49 @@ export const IdeaOutputSchema = z.object({
 });
 
 export type IdeaOutput = z.infer<typeof IdeaOutputSchema>;
+
+/**
+ * Plain JSON Schema object equivalent to IdeaOutputSchema.
+ * Used as the `responseFormat.jsonSchema.schema` for native structured output (Phase 1).
+ * Keep in sync with IdeaSchema / SourceReferenceSchema above.
+ */
+export const IdeaOutputJsonSchema: Record<string, unknown> = {
+  type: "object",
+  properties: {
+    ideas: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          working_title: { type: "string" },
+          hook: { type: "string" },
+          key_points: { type: "array", items: { type: "string" } },
+          key_quotes: { type: "array", items: { type: "string" }, minItems: 1 },
+          proposed_flow: { type: "string" },
+          insights_conclusions: { type: "string" },
+          call_to_action: { type: "string" },
+          storytelling_angle: { type: "string" },
+          target_audience_note: { type: "string" },
+          content_format_suggestion: { type: "string" },
+          source_references: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                tag: { type: "string" },
+                quote_snippet: { type: "string" },
+              },
+              required: ["tag", "quote_snippet"],
+              additionalProperties: false,
+            },
+            minItems: 1,
+          },
+        },
+        required: ["working_title", "key_quotes", "source_references"],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ["ideas"],
+  additionalProperties: false,
+};

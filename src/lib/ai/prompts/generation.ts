@@ -1,33 +1,40 @@
+import type { ResolvedProfile } from "@/lib/ai/generation/profile";
+import type { TaggedFragment } from "@/lib/ai/generation/retrieval";
+
 interface UserPromptParams {
   campaignTitle: string;
   campaignGoal: string | null;
   campaignDescription: string | null;
   batchSize: number;
+  fragments: TaggedFragment[];
 }
 
 /**
- * System prompt for the idea generation agent.
+ * System prompt for the deterministic idea generation pipeline.
  *
- * Embeds hardcoded business profile defaults (stand-in until S-04 business
- * profile wizard lands) and instructs the LLM on output format, tool usage,
- * and provenance requirements.
+ * Embeds the resolved business profile and instructs the model to:
+ * - produce raw JSON matching the schema (no markdown fences)
+ * - ground every idea in the provided tagged fragments
+ * - cite fragment tags (F1, F2, …) in source_references, not IDs
+ * - copy key_quotes verbatim from fragment text
+ *
+ * No tool-usage instructions — retrieval is handled server-side.
  */
-export function buildGenerationSystemPrompt(): string {
+export function buildGenerationSystemPrompt(profile: ResolvedProfile): string {
+  const keywordsLine = profile.keywords.length > 0 ? `- Keywords to emphasise: ${profile.keywords.join(", ")}` : "";
+
   return `You are a content strategist and post idea generator specialising in B2B thought leadership content.
 
-## Business Profile (defaults — check get_business_profile tool for overrides)
+## Business Profile
 
-- Tone of voice: professional, authoritative, evidence-driven
-- Target audience: broad B2B professionals and decision-makers
-- Brand goal: thought leadership — establish expertise, share insights, drive conversations
-- Content archetype: expertise-driven — anchor every idea in a concrete finding, quote, or observation from source materials
+- Tone of voice: ${profile.toneOfVoice}
+- Target audience: ${profile.audience}
+- Brand goal: ${profile.brandGoal}
+- Content archetype: ${profile.archetype}${keywordsLine ? `\n${keywordsLine}` : ""}
 
 ## Your Task
 
-Use the tools available to you to:
-1. Call get_business_profile to retrieve any saved profile. If the profile is empty or missing, use the defaults above.
-2. Call search_documents repeatedly with varied queries to discover relevant content in the campaign documents.
-3. Generate the requested number of distinct, non-overlapping post ideas grounded in the discovered content.
+Generate the requested number of distinct, non-overlapping post ideas grounded in the source fragments provided in the user message. The fragments are tagged [F1], [F2], etc. You must cite them by tag in each idea's source_references.
 
 ## Output Format
 
@@ -39,7 +46,7 @@ Respond with a single JSON object matching this schema (no markdown fences, raw 
       "working_title": "string — concise, compelling title for the post",
       "hook": "string — opening sentence that grabs attention",
       "key_points": ["string", ...],
-      "key_quotes": ["exact quote from document", ...],
+      "key_quotes": ["exact verbatim quote copied from a fragment", ...],
       "proposed_flow": "optional — suggested narrative arc",
       "insights_conclusions": "optional — key takeaway or insight",
       "call_to_action": "optional — what the reader should do or think",
@@ -48,9 +55,8 @@ Respond with a single JSON object matching this schema (no markdown fences, raw 
       "content_format_suggestion": "optional — e.g. LinkedIn carousel, thread, long-form article",
       "source_references": [
         {
-          "document_version_id": "exact ID from search_documents result — copy verbatim",
-          "document_title": "human-readable document title",
-          "quote_snippet": "brief quote from this document supporting the idea"
+          "tag": "F1",
+          "quote_snippet": "brief quote from this fragment supporting the idea"
         }
       ]
     }
@@ -59,18 +65,18 @@ Respond with a single JSON object matching this schema (no markdown fences, raw 
 
 ## Critical Rules
 
-- Every idea MUST call search_documents to find supporting content — do not fabricate evidence.
-- key_quotes must be actual quotes copied verbatim from documents, not paraphrases.
-- source_references.document_version_id MUST be the exact ID returned by search_documents — copy it character-for-character. This is used for database provenance; any hallucinated or guessed ID will be rejected.
-- Each idea must be distinct: different angle, different source content, different call to action.
+- Every idea MUST cite at least one fragment tag in source_references.
+- key_quotes must be actual quotes copied verbatim from the fragment text — no paraphrasing.
+- Each idea must be distinct: different angle, different source fragments, different call to action.
 - Output raw JSON only — no markdown code fences, no commentary before or after the JSON.`;
 }
 
 /**
  * User prompt for a specific campaign generation request.
+ * Renders the tagged fragment block inline so the model has all context it needs.
  */
 export function buildGenerationUserPrompt(params: UserPromptParams): string {
-  const { campaignTitle, campaignGoal, campaignDescription, batchSize } = params;
+  const { campaignTitle, campaignGoal, campaignDescription, batchSize, fragments } = params;
 
   const lines: string[] = [
     `Generate ${batchSize} structured post idea${batchSize === 1 ? "" : "s"} for the following campaign:`,
@@ -86,13 +92,20 @@ export function buildGenerationUserPrompt(params: UserPromptParams): string {
     lines.push(`Campaign description: ${campaignDescription}`);
   }
 
+  lines.push("", "## Source Fragments", "");
+
+  if (fragments.length === 0) {
+    lines.push("(No fragments found — generate ideas based on campaign context alone.)");
+  } else {
+    for (const f of fragments) {
+      lines.push(`[${f.tag}] (${f.documentTitle}): ${f.chunkText}`);
+    }
+  }
+
   lines.push(
     "",
-    "Instructions:",
-    "1. Use search_documents to find relevant content across the campaign documents.",
-    "2. Use get_business_profile to check for a saved business profile (fall back to defaults if empty).",
-    `3. Return exactly ${batchSize} idea${batchSize === 1 ? "" : "s"} as a JSON object matching the schema in your system instructions.`,
-    "4. Each idea must be grounded in specific document content — include real quotes and accurate document_version_id values.",
+    `Return exactly ${batchSize} idea${batchSize === 1 ? "" : "s"} as a JSON object matching the schema in your system instructions.`,
+    "Cite fragment tags (F1, F2, …) in source_references — do not invent tags not listed above.",
   );
 
   return lines.join("\n");
