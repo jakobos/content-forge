@@ -11,6 +11,7 @@ import { searchDocumentsTool, createGetBusinessProfileTool } from "./tools/defin
 import type { Tool, ToolRegistry } from "./tools";
 import { createAgentRunner } from "./runner";
 import type { AgentRunnerConfig } from "./runner";
+import { createGenerationService as createGenService } from "./generation/service";
 
 export interface AIContext {
   provider: Provider;
@@ -18,6 +19,7 @@ export interface AIContext {
   searchService: SearchService;
   toolRegistry: ToolRegistry;
   createRunner(config: AgentRunnerConfig): ReturnType<typeof createAgentRunner>;
+  createGenerationService(config: { campaignId: string }): ReturnType<typeof createGenService>;
 }
 
 /**
@@ -77,6 +79,15 @@ export function initializeAI(config: {
     toolRegistry,
     createRunner(runnerConfig: AgentRunnerConfig) {
       return createAgentRunner(runnerConfig, { provider, toolRegistry });
+    },
+    createGenerationService(genConfig: { campaignId: string }) {
+      return createGenService({
+        provider,
+        searchService,
+        supabase: config.supabase,
+        userId: config.userId ?? "",
+        campaignId: genConfig.campaignId,
+      });
     },
   };
 }
