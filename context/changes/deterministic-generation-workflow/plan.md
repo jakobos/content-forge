@@ -463,9 +463,9 @@ No schema changes — F-01 provides all required tables/columns/indexes/enums. T
 
 #### Automated
 
-- [x] 1.1 `npx astro sync` completes
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 `npx astro sync` completes — 88f59e9
+- [x] 1.2 `npm run lint` passes — 88f59e9
+- [x] 1.3 `npm run build` passes — 88f59e9
 
 #### Manual
 
@@ -476,10 +476,10 @@ No schema changes — F-01 provides all required tables/columns/indexes/enums. T
 
 #### Automated
 
-- [ ] 2.1 `npx astro sync` completes
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
-- [ ] 2.4 File exists: `src/lib/ai/generation/retrieval.ts`
+- [x] 2.1 `npx astro sync` completes
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
+- [x] 2.4 File exists: `src/lib/ai/generation/retrieval.ts`
 
 #### Manual
 
