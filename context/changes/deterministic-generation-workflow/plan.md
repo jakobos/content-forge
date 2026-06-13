@@ -524,10 +524,10 @@ No schema changes — F-01 provides all required tables/columns/indexes/enums. T
 
 #### Automated
 
-- [x] 5.1 `npx astro sync` completes
-- [x] 5.2 `npm run lint` passes
-- [x] 5.3 `npm run build` passes
-- [x] 5.4 Files exist: `src/lib/ai/sse-client.ts`, `src/components/campaigns/GenerateIdeasPanel.tsx`
+- [x] 5.1 `npx astro sync` completes — 93884a2
+- [x] 5.2 `npm run lint` passes — 93884a2
+- [x] 5.3 `npm run build` passes — 93884a2
+- [x] 5.4 Files exist: `src/lib/ai/sse-client.ts`, `src/components/campaigns/GenerateIdeasPanel.tsx` — 93884a2
 
 #### Manual
 
@@ -543,11 +543,11 @@ No schema changes — F-01 provides all required tables/columns/indexes/enums. T
 
 #### Automated
 
-- [ ] 6.1 `npx astro sync` completes
-- [ ] 6.2 `npm run lint` passes
-- [ ] 6.3 `npm run build` passes
-- [ ] 6.4 `runner/` and `tools/` dirs removed; `generate.ts` endpoint removed (`ideas.ts` removed in Phase 3)
-- [ ] 6.5 `rg -n "runner|toolRegistry|/api/ai/generate\b|/api/ai/ideas|output-parser" src` returns no live references
+- [x] 6.1 `npx astro sync` completes
+- [x] 6.2 `npm run lint` passes
+- [x] 6.3 `npm run build` passes
+- [x] 6.4 `runner/` and `tools/` dirs removed; `generate.ts` endpoint removed (`ideas.ts` already removed in Phase 3)
+- [x] 6.5 `rg -n "runner|toolRegistry|/api/ai/generate\b|/api/ai/ideas|output-parser" src` returns no live references
 
 #### Manual
 
