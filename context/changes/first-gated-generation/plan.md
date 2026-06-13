@@ -405,25 +405,25 @@ No schema changes needed -- F-01 already provides all required tables, columns, 
 
 #### Automated
 
-- [x] 1.1 `npx astro sync` completes
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 `npx astro sync` completes — 05e8c35
+- [x] 1.2 `npm run lint` passes — 05e8c35
+- [x] 1.3 `npm run build` passes — 05e8c35
 
 #### Manual
 
-- [x] 1.4 Adding a source document completes (redirect back to campaign page works)
-- [x] 1.5 Adding a document creates embedding rows in `document_embeddings` with the version ID
-- [x] 1.6 Adding a document without `OPENROUTER_API_KEY` still creates the document (no embeddings)
-- [x] 1.7 `background_operations` row tracks embedding status (`completed` or `failed`)
+- [x] 1.4 Adding a source document completes (redirect back to campaign page works) — 05e8c35
+- [x] 1.5 Adding a document creates embedding rows in `document_embeddings` with the version ID — 05e8c35
+- [x] 1.6 Adding a document without `OPENROUTER_API_KEY` still creates the document (no embeddings) — 05e8c35
+- [x] 1.7 `background_operations` row tracks embedding status (`completed` or `failed`) — 05e8c35
 
 ### Phase 2: Prompt Templates & Persist Endpoint
 
 #### Automated
 
-- [ ] 2.1 `npx astro sync` completes
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
-- [ ] 2.4 Files exist: `src/lib/ai/prompts/schemas.ts`, `src/lib/ai/prompts/generation.ts`, `src/lib/ai/prompts/index.ts`, `src/pages/api/ai/ideas.ts`
+- [x] 2.1 `npx astro sync` completes
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
+- [x] 2.4 Files exist: `src/lib/ai/prompts/schemas.ts`, `src/lib/ai/prompts/generation.ts`, `src/lib/ai/prompts/index.ts`, `src/pages/api/ai/ideas.ts`
 
 #### Manual
 
