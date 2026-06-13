@@ -543,11 +543,11 @@ No schema changes — F-01 provides all required tables/columns/indexes/enums. T
 
 #### Automated
 
-- [x] 6.1 `npx astro sync` completes
-- [x] 6.2 `npm run lint` passes
-- [x] 6.3 `npm run build` passes
-- [x] 6.4 `runner/` and `tools/` dirs removed; `generate.ts` endpoint removed (`ideas.ts` already removed in Phase 3)
-- [x] 6.5 `rg -n "runner|toolRegistry|/api/ai/generate\b|/api/ai/ideas|output-parser" src` returns no live references
+- [x] 6.1 `npx astro sync` completes — 55a0470
+- [x] 6.2 `npm run lint` passes — 55a0470
+- [x] 6.3 `npm run build` passes — 55a0470
+- [x] 6.4 `runner/` and `tools/` dirs removed; `generate.ts` endpoint removed (`ideas.ts` already removed in Phase 3) — 55a0470
+- [x] 6.5 `rg -n "runner|toolRegistry|/api/ai/generate\b|/api/ai/ideas|output-parser" src` returns no live references — 55a0470
 
 #### Manual
 
