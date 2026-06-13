@@ -175,6 +175,21 @@ function buildRequestBody(request: ProviderRequest, stream: boolean): Record<str
     body.tools = tools;
     body.tool_choice = "auto";
   }
+  // Structured-output: wire response_format when caller requests schema-constrained JSON.
+  // Verified: OpenRouter /responses endpoint honours response_format.type="json_schema"
+  // for supported models (e.g. openai/gpt-4o-mini). If the model does not support it,
+  // the generation service falls back to prompt-instructed JSON + server-side Zod parse
+  // with one auto-retry (see src/lib/ai/generation/service.ts).
+  if (request.responseFormat) {
+    body.response_format = {
+      type: "json_schema",
+      json_schema: {
+        name: request.responseFormat.jsonSchema.name,
+        strict: request.responseFormat.jsonSchema.strict ?? true,
+        schema: request.responseFormat.jsonSchema.schema,
+      },
+    };
+  }
   return body;
 }
 
