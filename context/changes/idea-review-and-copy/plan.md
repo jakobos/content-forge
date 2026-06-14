@@ -296,7 +296,7 @@ None. No schema changes.
 
 #### Automated
 
-- [x] 4.1 Roadmap table row + slice block present and well-formed
+- [x] 4.1 Roadmap table row + slice block present and well-formed — 859a8ad
 
 #### Manual
 
