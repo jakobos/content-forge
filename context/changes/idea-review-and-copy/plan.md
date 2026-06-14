@@ -279,9 +279,9 @@ None. No schema changes.
 
 #### Automated
 
-- [x] 3.1 `npx astro sync` succeeds
-- [x] 3.2 Type checking + lint passes: `npm run lint`
-- [x] 3.3 `npm run build` succeeds
+- [x] 3.1 `npx astro sync` succeeds — b945afd
+- [x] 3.2 Type checking + lint passes: `npm run lint` — b945afd
+- [x] 3.3 `npm run build` succeeds — b945afd
 
 #### Manual
 
@@ -296,7 +296,7 @@ None. No schema changes.
 
 #### Automated
 
-- [ ] 4.1 Roadmap table row + slice block present and well-formed
+- [x] 4.1 Roadmap table row + slice block present and well-formed
 
 #### Manual
 
