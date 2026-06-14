@@ -264,9 +264,9 @@ None. No schema changes.
 
 #### Automated
 
-- [x] 2.1 `npx astro sync` succeeds
-- [x] 2.2 Type checking passes: `npm run lint`
-- [x] 2.3 `npm run build` succeeds
+- [x] 2.1 `npx astro sync` succeeds — 5cc8d65
+- [x] 2.2 Type checking passes: `npm run lint` — 5cc8d65
+- [x] 2.3 `npm run build` succeeds — 5cc8d65
 
 #### Manual
 
@@ -279,9 +279,9 @@ None. No schema changes.
 
 #### Automated
 
-- [ ] 3.1 `npx astro sync` succeeds
-- [ ] 3.2 Type checking + lint passes: `npm run lint`
-- [ ] 3.3 `npm run build` succeeds
+- [x] 3.1 `npx astro sync` succeeds
+- [x] 3.2 Type checking + lint passes: `npm run lint`
+- [x] 3.3 `npm run build` succeeds
 
 #### Manual
 
