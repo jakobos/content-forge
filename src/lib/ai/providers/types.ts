@@ -59,12 +59,27 @@ export interface ToolDefinition {
   strict?: boolean | null;
 }
 
+/**
+ * Structured-output format constraint for JSON-schema-constrained responses.
+ * Maps to OpenRouter's `response_format: { type: "json_schema", json_schema: { ... } }`.
+ */
+export interface ResponseFormat {
+  type: "json_schema";
+  jsonSchema: {
+    name: string;
+    strict?: boolean;
+    schema: Record<string, unknown>;
+  };
+}
+
 // Request to a provider
 export interface ProviderRequest {
   model: string;
   instructions?: string;
   input: ProviderInputItem[];
   tools?: ToolDefinition[];
+  /** Optional JSON-schema structured output constraint. */
+  responseFormat?: ResponseFormat;
   stream?: boolean;
   temperature?: number;
   maxTokens?: number;

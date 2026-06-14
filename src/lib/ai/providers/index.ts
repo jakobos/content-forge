@@ -9,6 +9,7 @@ export type {
   ProviderResponse,
   ProviderStreamEvent,
   ToolDefinition,
+  ResponseFormat,
   ProviderRequest,
   Provider,
 } from "./types";

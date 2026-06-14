@@ -4,16 +4,11 @@ import { OPENROUTER_API_KEY } from "astro:env/server";
 import { createClient } from "@/lib/supabase";
 import { initializeAI } from "@/lib/ai";
 import { createSSEResponse } from "@/lib/ai/streaming";
-import type { ProviderInputItem } from "@/lib/ai/providers";
-import type { RunnerStreamEvent } from "@/lib/ai/runner";
-
-const DEFAULT_MODEL = "openrouter:anthropic/claude-sonnet-4-20250514";
+import type { GenerationProgressEvent } from "@/lib/ai/generation/service";
 
 const BodySchema = z.object({
   campaign_id: z.uuid(),
-  model: z.string().optional(),
-  system_prompt: z.string().min(1),
-  user_prompt: z.string().min(1),
+  batch_size: z.number().int().min(1).max(10).default(5),
 });
 
 export const POST: APIRoute = async (context) => {
@@ -43,7 +38,7 @@ export const POST: APIRoute = async (context) => {
   if (!parsed.success) {
     return jsonError(`Invalid request: ${parsed.error.issues[0]?.message ?? "bad input"}`, 400);
   }
-  const { campaign_id, model, system_prompt, user_prompt } = parsed.data;
+  const { campaign_id, batch_size } = parsed.data;
 
   // Verify campaign ownership
   const { data: campaign, error: campaignError } = await supabase
@@ -54,19 +49,13 @@ export const POST: APIRoute = async (context) => {
     .maybeSingle();
 
   if (campaignError) {
-    return new Response(JSON.stringify({ ok: false, error: "Database error verifying campaign" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonError("Database error verifying campaign", 500);
   }
   if (!campaign) {
-    return new Response(JSON.stringify({ ok: false, error: "Campaign not found or access denied" }), {
-      status: 403,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonError("Campaign not found or access denied", 403);
   }
 
-  // Create background operation
+  // Create background_operations row
   const { data: bgOp, error: bgOpError } = await supabase
     .from("background_operations")
     .insert({
@@ -82,16 +71,17 @@ export const POST: APIRoute = async (context) => {
     return jsonError("Failed to create operation record", 500);
   }
 
-  const ai = initializeAI({ openrouterApiKey: OPENROUTER_API_KEY, supabase, userId: user.id, campaignId: campaign_id });
-  const runner = ai.createRunner({
-    model: model ?? DEFAULT_MODEL,
-    systemInstructions: system_prompt,
+  const ai = initializeAI({
+    openrouterApiKey: OPENROUTER_API_KEY,
+    supabase,
+    userId: user.id,
+    campaignId: campaign_id,
   });
 
-  const input: ProviderInputItem[] = [{ type: "message", role: "user", content: user_prompt }];
+  const generationService = ai.createGenerationService({ campaignId: campaign_id });
 
-  // Async generator that tracks status in background_operations
-  async function* trackedEvents(): AsyncGenerator<RunnerStreamEvent> {
+  // Tracked async generator: transitions background_operations in_progress -> completed/failed
+  async function* trackedEvents(): AsyncGenerator<GenerationProgressEvent> {
     await supabase
       .from("background_operations")
       .update({ status: "in_progress", started_at: new Date().toISOString() })
@@ -99,13 +89,13 @@ export const POST: APIRoute = async (context) => {
 
     let succeeded = false;
     try {
-      for await (const event of runner.run(input, context.request.signal)) {
+      for await (const event of generationService.run({ batchSize: batch_size, bgOpId: bgOp.id })) {
         yield event;
-        if (event.type === "runner_done") succeeded = true;
+        if (event.type === "done") succeeded = true;
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Generation failed";
-      yield { type: "runner_error", error: message };
+      yield { type: "error", error: message };
     } finally {
       await supabase
         .from("background_operations")
