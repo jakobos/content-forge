@@ -1,9 +1,9 @@
 ---
 change_id: first-gated-generation
 title: First gated generation
-status: implementing
+status: superseded
 created: 2026-06-12
-updated: 2026-06-13
+updated: 2026-06-14
 archived_at: null
 ---
 

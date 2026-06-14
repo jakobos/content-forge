@@ -123,7 +123,7 @@ export const POST: APIRoute = async (context) => {
           .update({ status: "completed", completed_at: new Date().toISOString() })
           .eq("id", bgOp.id);
       }
-    } catch {
+    } catch (e) {
       // Embedding failure must not block document creation
       if (bgOp) {
         await supabase
@@ -131,7 +131,7 @@ export const POST: APIRoute = async (context) => {
           .update({
             status: "failed",
             completed_at: new Date().toISOString(),
-            error_message: "Embedding failed",
+            error_message: e instanceof Error ? e.message : String(e),
           })
           .eq("id", bgOp.id);
       }

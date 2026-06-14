@@ -8,7 +8,7 @@ import { deriveSeedQueries, retrieveTaggedFragments } from "./retrieval";
 import type { TaggedFragment } from "./retrieval";
 import { resolveBusinessProfile } from "./profile";
 
-const DEFAULT_MODEL = "openrouter:anthropic/claude-sonnet-4-20250514";
+const DEFAULT_MODEL = "anthropic/claude-sonnet-4.6";
 const GENERATION_TEMPERATURE = 0.8;
 const GENERATION_MAX_TOKENS = 8192;
 

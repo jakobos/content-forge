@@ -1,5 +1,16 @@
 # First Gated Generation Implementation Plan
 
+> **SUPERSEDED (2026-06-14):** Phases 2-4 of this plan were superseded by F-04
+> `deterministic-generation-workflow` (`context/changes/deterministic-generation-workflow/plan.md`).
+> F-04 replaced the agentic runner path with a deterministic, server-orchestrated
+> pipeline and, in doing so, **deleted `/api/ai/ideas`**, **rewrote the prompt
+> templates and `SourceReferenceSchema`** (tag-based, not `document_version_id`
+> echo), and **rebuilt the UI against `/api/ai/generate-ideas`** with server-side
+> persistence. Only **Phase 1 (auto-embed)** of this plan stands as originally
+> specified. The remaining delivery of S-02 is tracked by F-04's manual
+> verification (its Phases 1-6, all currently pending). See the Progress section
+> for per-item status.
+
 ## Overview
 
 Build the north star feature (S-02): users can generate structured post ideas from campaign documents via AI. This connects the existing AI generation pipeline (F-02) to a user-facing flow on the campaign detail page -- a "Generate Ideas" button triggers generation, SSE streaming shows real-time progress, and persisted ideas appear in an expandable card layout. Documents are auto-embedded on creation so RAG search works seamlessly. Hardcoded profile defaults stand in until the business profile wizard (S-04) lands.
@@ -399,7 +410,7 @@ No schema changes needed -- F-01 already provides all required tables, columns, 
 
 ## Progress
 
-> Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
+> Convention: `- [ ]` pending, `- [x]` done, `- [~]` superseded by F-04 (see banner at top of plan). Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
 
 ### Phase 1: Auto-Embed on Document Creation
 
@@ -420,55 +431,73 @@ No schema changes needed -- F-01 already provides all required tables, columns, 
 
 #### Automated
 
-- [x] 2.1 `npx astro sync` completes
-- [x] 2.2 `npm run lint` passes
-- [x] 2.3 `npm run build` passes
-- [x] 2.4 Files exist: `src/lib/ai/prompts/schemas.ts`, `src/lib/ai/prompts/generation.ts`, `src/lib/ai/prompts/index.ts`, `src/pages/api/ai/ideas.ts`
+- [x] 2.1 `npx astro sync` completes — 3138d05
+- [x] 2.2 `npm run lint` passes — 3138d05
+- [x] 2.3 `npm run build` passes — 3138d05
+- [x] 2.4 Files exist: `src/lib/ai/prompts/schemas.ts`, `src/lib/ai/prompts/generation.ts`, `src/lib/ai/prompts/index.ts`, `src/pages/api/ai/ideas.ts` — 3138d05
 
 #### Manual
 
-- [ ] 2.5 `POST /api/ai/ideas` with valid data inserts ideas and fragment references
-- [ ] 2.6 `generation_number` auto-increments correctly (first batch = 1, second = 2)
-- [ ] 2.7 Invalid input returns structured error response
-- [ ] 2.8 Duplicate document titles resolve correctly to `document_version_id`
-- [ ] 2.9 Unmatched document titles still create fragment references with `document_version_id: null`
+> SUPERSEDED by F-04: `/api/ai/ideas` was deleted (F-04 Phase 3, `8797597`) and
+> title-matching provenance was replaced by tag resolution. These items are
+> unverifiable as written. Equivalent server-side behavior is verified by F-04
+> manual items 4.6-4.8.
+
+- [~] 2.5 ~~`POST /api/ai/ideas` inserts ideas and fragment references~~ — endpoint deleted; see F-04 4.6
+- [~] 2.6 ~~`generation_number` auto-increments~~ — moved server-side; see F-04 4.8
+- [~] 2.7 ~~Invalid input returns structured error~~ — see F-04 4.9 (one-retry then clean error)
+- [~] 2.8 ~~Duplicate document titles resolve to `document_version_id`~~ — title matching dropped; tag resolution, see F-04 4.7
+- [~] 2.9 ~~Unmatched titles create null-ref~~ — replaced by "unmatched tags dropped", see F-04 4.7
 
 ### Phase 3: Generation UI
 
 #### Automated
 
-- [ ] 3.1 `npx astro sync` completes
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` passes
-- [ ] 3.4 Files exist: `src/lib/ai/sse-client.ts`, `src/components/campaigns/GenerateIdeasPanel.tsx`
+- [x] 3.1 `npx astro sync` completes
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` passes
+- [x] 3.4 Files exist: `src/lib/ai/sse-client.ts`, `src/components/campaigns/GenerateIdeasPanel.tsx`
 
 #### Manual
 
-- [ ] 3.5 "Generate Ideas" button disabled with "Add documents first" when no documents exist
-- [ ] 3.6 Clicking "Generate Ideas" starts SSE streaming
-- [ ] 3.7 Progress phases display in real-time (searching, generating, streaming text)
-- [ ] 3.8 "Saving ideas..." appears when generation completes
-- [ ] 3.9 After persistence, ideas are saved to the database (verify via Supabase Dashboard); page reloads (visual display verified in Phase 4)
-- [ ] 3.10 Error state shows message with "Try Again" button
-- [ ] 3.11 Batch size selector (1-10) controls number of generated ideas
-- [ ] 3.12 Generation can be triggered multiple times (`generation_number` increments)
+> SUPERSEDED by F-04 Phase 5 (`93884a2`): the panel was rebuilt against
+> `/api/ai/generate-ideas` with `GenerationProgressEvent` phases
+> (`retrieving`/`generating`/`saving`) and server-side persistence — no client
+> JSON parse, no `text_delta` streaming, no `/api/ai/ideas` POST. The automated
+> file-existence checks above pass because F-04 created these files, but to a
+> different spec. Verify behavior via F-04 manual items 5.5-5.11.
+
+- [~] 3.5 Button disabled with "Add documents first" when no documents — still valid; tracked by F-04 5.5
+- [~] 3.6 ~~Clicking starts SSE streaming~~ — endpoint changed to `/api/ai/generate-ideas`; F-04 5.6
+- [~] 3.7 ~~Real-time streaming text~~ — replaced by coarse phase labels; F-04 5.6
+- [~] 3.8 "Saving ideas..." appears on completion — valid; F-04 5.6 (`saving` phase)
+- [~] 3.9 ~~Client persists then reloads~~ — persistence moved server-side; client only reloads; F-04 5.6
+- [~] 3.10 Error state shows message with "Try Again" — valid; F-04 5.9
+- [~] 3.11 Batch size selector (1-10) controls idea count — valid; F-04 5.10
+- [~] 3.12 ~~`generation_number` increments on repeat~~ — now verified server-side; F-04 4.8
 
 ### Phase 4: Idea Display
 
+> SUPERSEDED by F-04 Phase 5 (`93884a2`): the server-rendered Ideas section on
+> `src/pages/campaigns/[id].astro` was built as part of F-04 Phase 5 step 3 to the
+> same spec (expandable `<details>` cards, grouped by `generation_number`,
+> glassmorphism styling). This entire phase is redundant. Verify via F-04 manual
+> items 5.7-5.11.
+
 #### Automated
 
-- [ ] 4.1 `npx astro sync` completes
-- [ ] 4.2 `npm run lint` passes
-- [ ] 4.3 `npm run build` passes
+- [~] 4.1 ~~`npx astro sync`~~ — covered by F-04 5.1
+- [~] 4.2 ~~`npm run lint`~~ — covered by F-04 5.2
+- [~] 4.3 ~~`npm run build`~~ — covered by F-04 5.3
 
 #### Manual
 
-- [ ] 4.4 Ideas section appears above Source Documents with expandable cards
-- [ ] 4.5 Ideas grouped by generation number (most recent first)
-- [ ] 4.6 Collapsed idea cards show working_title and hook preview
-- [ ] 4.7 Expanded card shows all populated fields (key_points, key_quotes, optional fields)
-- [ ] 4.8 Source references show document titles and quote snippets
-- [ ] 4.9 Empty state displays "No ideas yet" message when no ideas exist
-- [ ] 4.10 Idea status badges display with correct styling
-- [ ] 4.11 Page loads quickly (ideas are server-rendered, not client-fetched)
-- [ ] 4.12 Multiple generation batches are visually distinguished
+- [~] 4.4 ~~Ideas section above Source Documents with expandable cards~~ — F-04 5.7
+- [~] 4.5 ~~Grouped by generation number (most recent first)~~ — F-04 5.7
+- [~] 4.6 ~~Collapsed cards show working_title and hook~~ — F-04 5.8
+- [~] 4.7 ~~Expanded card shows all populated fields~~ — F-04 5.8
+- [~] 4.8 ~~Source references show document titles and quote snippets~~ — F-04 5.8
+- [~] 4.9 ~~Empty state "No ideas yet"~~ — F-04 5.5/5.7
+- [~] 4.10 ~~Idea status badges styled~~ — F-04 5.8
+- [~] 4.11 ~~Ideas server-rendered, not client-fetched~~ — F-04 5.11
+- [~] 4.12 ~~Multiple generation batches visually distinguished~~ — F-04 5.7
