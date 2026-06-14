@@ -65,6 +65,13 @@ async function fetchCampaignMeta(
   return { title: data.title, goal: data.goal, description: data.description };
 }
 
+/**
+ * Returns the next generation number for a campaign by reading max(generation_number) + 1.
+ * Known edge case: two concurrent generate-ideas requests for the same campaign (e.g. two
+ * browser tabs) may both read the same max and produce duplicate generation numbers. Ideas
+ * are still saved correctly; the UI just groups two batches under the same "Generation #N"
+ * heading. Acceptable for current usage — fix with a Postgres RPC if concurrency becomes a concern.
+ */
 async function autoIncrementGenerationNumber(supabase: SupabaseClient<Database>, campaignId: string): Promise<number> {
   const { data } = await supabase
     .from("ideas")
@@ -168,17 +175,20 @@ async function persistIdeas(
 
     ideaIds.push(insertedIdea.id);
 
-    // Resolve tags -> documentVersionId and insert fragment references
-    for (const ref of idea.source_references) {
-      const documentVersionId = tagMap.get(ref.tag) ?? null;
-      // Drop unmatched tags silently — they are invalid citations
-      if (!documentVersionId) continue;
+    // Resolve tags -> documentVersionId and batch-insert all refs in one round-trip
+    const refsToInsert = idea.source_references
+      .map((ref) => {
+        const documentVersionId = tagMap.get(ref.tag) ?? null;
+        if (!documentVersionId) return null; // Drop unmatched tags silently
+        return { idea_id: insertedIdea.id, document_version_id: documentVersionId, quote_snippet: ref.quote_snippet };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
 
-      await supabase.from("idea_fragment_references").insert({
-        idea_id: insertedIdea.id,
-        document_version_id: documentVersionId,
-        quote_snippet: ref.quote_snippet,
-      });
+    if (refsToInsert.length > 0) {
+      const { error: refError } = await supabase.from("idea_fragment_references").insert(refsToInsert);
+      if (refError) {
+        throw new Error(`Failed to insert fragment references: ${refError.message}`);
+      }
     }
   }
 

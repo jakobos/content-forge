@@ -144,7 +144,9 @@ Build a server-side retrieval module that derives rule-based seed queries, runs 
 
 **Intent**: Run hybrid search for each seed query, merge across queries with RRF, dedupe by `documentVersionId`+`chunkIndex`, cap the fragment set, and assign each fragment a stable tag.
 
-**Contract**: Export `retrieveTaggedFragments(searchService, campaignId, seedQueries, options?): Promise<TaggedFragment[]>` where `TaggedFragment = { tag: string; chunkText: string; documentVersionId: string; documentTitle: string; chunkIndex: number }`. Run `searchService.search(query, campaignId, { limit })` per seed; merge all result lists with `reciprocalRankFusion` (reuse `src/lib/ai/search/rrf.ts`); dedupe on `documentVersionId:chunkIndex`; cap to `MAX_FRAGMENTS` (constant); assign tags `F1..Fn` in merged-rank order. Tag-to-`documentVersionId` mapping is derivable from the returned array (the persist step reuses it).
+**Contract**: Export `retrieveTaggedFragments(searchService, supabase, campaignId, seedQueries, options?): Promise<TaggedFragment[]>` where `TaggedFragment = { tag: string; chunkText: string; documentVersionId: string; documentTitle: string; chunkIndex: number }`. Run `searchService.search(query, campaignId, { limit })` per seed; merge all result lists with `reciprocalRankFusion` (reuse `src/lib/ai/search/rrf.ts`); dedupe on `documentVersionId:chunkIndex`; cap to `MAX_FRAGMENTS` (constant); assign tags `F1..Fn` in merged-rank order. Tag-to-`documentVersionId` mapping is derivable from the returned array (the persist step reuses it).
+
+> **Addendum (impl)**: The `supabase` parameter was added to the signature (not in the original plan) to fetch `documentTitle` for each fragment via a `document_versions → documents` join. Required because `TaggedFragment.documentTitle` is specified in the contract but the search service does not return titles. All callers pass `supabase` correctly.
 
 **Contract (note)**: `documentTitle` is fetched alongside fragments (join through `document_versions` -> `documents`) for human-readable prompt context and display, but provenance resolution uses the tag->`documentVersionId` map, never the title.
 

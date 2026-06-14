@@ -22,7 +22,7 @@ export interface AIContext {
 export function initializeAI(config: {
   openrouterApiKey: string;
   supabase: SupabaseClient<Database>;
-  userId?: string;
+  userId: string;
   campaignId?: string;
 }): AIContext {
   // Register the OpenRouter provider
@@ -47,7 +47,7 @@ export function initializeAI(config: {
         provider,
         searchService,
         supabase: config.supabase,
-        userId: config.userId ?? "",
+        userId: config.userId,
         campaignId: genConfig.campaignId,
       });
     },

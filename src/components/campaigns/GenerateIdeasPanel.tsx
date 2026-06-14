@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { consumeSSE } from "@/lib/ai/sse-client";
 
 interface Props {
@@ -19,8 +19,11 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
   const [batchSize, setBatchSize] = useState(5);
   const [phase, setPhase] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const abortRef = useRef<AbortController | null>(null);
 
   async function handleGenerate() {
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
     setState("generating");
     setPhase("retrieving");
     setErrorMessage("");
@@ -30,6 +33,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ campaign_id: campaignId, batch_size: batchSize }),
+        signal: ctrl.signal,
       });
 
       if (!response.ok) {
@@ -48,6 +52,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
         setPhase(event.type);
       }
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
       setErrorMessage(err instanceof Error ? err.message : "Generation failed");
       setState("error");
     }
