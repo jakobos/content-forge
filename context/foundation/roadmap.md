@@ -3,7 +3,7 @@ project: ContentForge
 version: 1
 status: draft
 created: 2026-05-31
-updated: 2026-06-13
+updated: 2026-06-14
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -34,7 +34,7 @@ Solo experts who build personal brands through social media have no tool that br
 | F-03 | data-authorization | (foundation) RLS policies and API authorization enforced on all application tables | F-01 | Access Control, Guardrails | proposed |
 | F-04 | deterministic-generation-workflow | (foundation) deterministic, step-logged generation workflow replaces the agentic tool-calling runner | F-02 | FR-012, FR-014, FR-021 | ready |
 | S-01 | campaign-document-crud | create campaigns and add documents | F-01 | US-01, FR-004, FR-005, FR-008, FR-009 | done |
-| S-02 | first-gated-generation | generate structured post ideas from campaign documents (hardcoded profile) | F-01, F-02, F-04, S-01 | US-01, FR-012, FR-014 | blocked |
+| S-02 | first-gated-generation | generate structured post ideas from campaign documents (hardcoded profile) | F-01, F-02, F-04, S-01 | US-01, FR-012, FR-014 | done |
 | S-03 | idea-review-and-copy | review ideas (accept/decline), copy in markdown | S-02 | FR-015, FR-016 | proposed |
 | S-04 | business-profile-wizard | complete and edit a business profile that influences generation | F-01 | FR-001, FR-002, FR-003 | ready |
 | S-05 | manual-idea-creation | describe an idea and get a structured version enriched with campaign documents | F-02, S-01 | US-02, FR-013 | ready |
@@ -150,7 +150,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - How many ideas does a batch generation produce? -- Owner: user. Block: no.
   - F-04 (deterministic generation workflow) must replace the agent runner before this slice's generation path is considered complete -- the agentic tool-calling loop proved unreliable in practice (model narrated tool plans instead of calling tools). -- Owner: user. Block: yes.
 - **Risk:** This is the north star -- the entire product rests on this slice producing useful, on-brand, fragment-referenced ideas. If generation quality is poor, no downstream slice matters. Validate with real documents early. The persistence, auto-embedding, and display work already landed; only the generation-trigger path is blocked on F-04.
-- **Status:** blocked
+- **Status:** done
 
 ### S-03: Idea review & copy
 
@@ -288,4 +288,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends entries here when changes are archived.)
+- **S-02: user can generate structured post ideas from campaign documents -- AI analyzes documents and produces ideas with working title, hook, key points, source references, and dynamic optional fields; generation uses hardcoded profile defaults (profile wizard deferred to S-04)** — Archived 2026-06-14 → `context/archive/2026-06-12-first-gated-generation/`. Lesson: —.
