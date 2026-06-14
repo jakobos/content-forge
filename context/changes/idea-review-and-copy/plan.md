@@ -251,9 +251,9 @@ None. No schema changes.
 
 #### Automated
 
-- [x] 1.1 `npx astro sync` succeeds
-- [x] 1.2 Type checking passes: `npm run lint`
-- [x] 1.3 Prettier formatting passes: `npm run format`
+- [x] 1.1 `npx astro sync` succeeds — 4ba1fad
+- [x] 1.2 Type checking passes: `npm run lint` — 4ba1fad
+- [x] 1.3 Prettier formatting passes: `npm run format` — 4ba1fad
 
 #### Manual
 
@@ -264,9 +264,9 @@ None. No schema changes.
 
 #### Automated
 
-- [ ] 2.1 `npx astro sync` succeeds
-- [ ] 2.2 Type checking passes: `npm run lint`
-- [ ] 2.3 `npm run build` succeeds
+- [x] 2.1 `npx astro sync` succeeds
+- [x] 2.2 Type checking passes: `npm run lint`
+- [x] 2.3 `npm run build` succeeds
 
 #### Manual
 
