@@ -27,33 +27,34 @@ Solo experts who build personal brands through social media have no tool that br
 
 ## At a glance
 
-| ID | Change ID | Outcome (user can ...) | Prerequisites | PRD refs | Status |
-|---|---|---|---|---|---|
-| F-01 | app-data-schema | (foundation) Supabase application tables landed for all domain entities | -- | FR-004, FR-008, FR-012 | done |
-| F-02 | ai-generation-pipeline | (foundation) AI generation infrastructure operational | F-01 | FR-012, FR-014, FR-021 | done |
-| F-03 | data-authorization | (foundation) RLS policies and API authorization enforced on all application tables | F-01 | Access Control, Guardrails | proposed |
-| F-04 | deterministic-generation-workflow | (foundation) deterministic, step-logged generation workflow replaces the agentic tool-calling runner | F-02 | FR-012, FR-014, FR-021 | ready |
-| S-01 | campaign-document-crud | create campaigns and add documents | F-01 | US-01, FR-004, FR-005, FR-008, FR-009 | done |
-| S-02 | first-gated-generation | generate structured post ideas from campaign documents (hardcoded profile) | F-01, F-02, F-04, S-01 | US-01, FR-012, FR-014 | done |
-| S-03 | idea-review-and-copy | review ideas (accept/decline), copy in markdown | S-02 | FR-015, FR-016 | proposed |
-| S-04 | business-profile-wizard | complete and edit a business profile that influences generation | F-01 | FR-001, FR-002, FR-003 | ready |
-| S-05 | manual-idea-creation | describe an idea and get a structured version enriched with campaign documents | F-02, S-01 | US-02, FR-013 | ready |
-| S-06 | idea-regeneration | regenerate ideas with optional improvement hints | F-02, S-02 | FR-017, FR-018 | proposed |
-| S-07 | campaign-document-lifecycle | manage campaign and document lifecycles with full state machines | S-01 | FR-006, FR-007, FR-010, FR-011 | ready |
-| S-08 | publication-tracking | record publication details on published ideas | S-03 | FR-019 | proposed |
-| S-09 | background-ops-status | see status of pending operations, get notified on completion/failure | F-02 | FR-021 | ready |
-| S-10 | account-deletion | permanently delete account and all associated data | F-01 | FR-020 | ready |
+| ID   | Change ID                         | Outcome (user can ...)                                                                               | Prerequisites          | PRD refs                              | Status   |
+| ---- | --------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------- | -------- |
+| F-01 | app-data-schema                   | (foundation) Supabase application tables landed for all domain entities                              | --                     | FR-004, FR-008, FR-012                | done     |
+| F-02 | ai-generation-pipeline            | (foundation) AI generation infrastructure operational                                                | F-01                   | FR-012, FR-014, FR-021                | done     |
+| F-03 | data-authorization                | (foundation) RLS policies and API authorization enforced on all application tables                   | F-01                   | Access Control, Guardrails            | proposed |
+| F-04 | deterministic-generation-workflow | (foundation) deterministic, step-logged generation workflow replaces the agentic tool-calling runner | F-02                   | FR-012, FR-014, FR-021                | ready    |
+| S-01 | campaign-document-crud            | create campaigns and add documents                                                                   | F-01                   | US-01, FR-004, FR-005, FR-008, FR-009 | done     |
+| S-02 | first-gated-generation            | generate structured post ideas from campaign documents (hardcoded profile)                           | F-01, F-02, F-04, S-01 | US-01, FR-012, FR-014                 | done     |
+| S-03 | idea-review-and-copy              | review ideas (accept/decline), copy in markdown                                                      | S-02                   | FR-015, FR-016                        | proposed |
+| S-04 | business-profile-wizard           | complete and edit a business profile that influences generation                                      | F-01                   | FR-001, FR-002, FR-003                | ready    |
+| S-05 | manual-idea-creation              | describe an idea and get a structured version enriched with campaign documents                       | F-02, S-01             | US-02, FR-013                         | ready    |
+| S-06 | idea-regeneration                 | regenerate ideas with optional improvement hints                                                     | F-02, S-02             | FR-017, FR-018                        | proposed |
+| S-07 | campaign-document-lifecycle       | manage campaign and document lifecycles with full state machines                                     | S-01                   | FR-006, FR-007, FR-010, FR-011        | ready    |
+| S-08 | publication-tracking              | record publication details on published ideas                                                        | S-03                   | FR-019                                | proposed |
+| S-09 | background-ops-status             | see status of pending operations, get notified on completion/failure                                 | F-02                   | FR-021                                | ready    |
+| S-10 | account-deletion              | permanently delete account and all associated data                                                   | F-01                   | FR-020                                | ready    |
+| S-11 | global-toast-notifications    | (UX infra) app-wide toast/notification system for async operation feedback                           | S-03                   | --                                    | proposed |
 
 ## Streams
 
 Navigation aid -- groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme | Chain | Note |
-|---|---|---|---|
-| A | Core generation | `F-01` → `S-01` → `S-02` → `S-03` → `S-08` | North star path; `S-02` now gated by `F-04` (workflow refactor) before it can complete. |
-| B | AI extensions | `F-02` → `F-04` → `S-05` / `S-06` / `S-09` | AI pipeline and downstream features; `F-04` also gates `S-02` in Stream A. |
-| C | Authorization gate | `F-03` | Runs parallel to Stream A/D; must land before real-user (multi-user) deployment of S-01, S-04, S-09, S-10. |
-| D | Profile, lifecycle & account | `S-04` / `S-07` / `S-10` | S-04 and S-10 now ready alongside Stream A; S-07 joins Stream A at `S-01`. |
+| Stream | Theme                        | Chain                                      | Note                                                                                                       |
+| ------ | ---------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| A      | Core generation              | `F-01` → `S-01` → `S-02` → `S-03` → `S-08` | North star path; `S-02` now gated by `F-04` (workflow refactor) before it can complete.                    |
+| B      | AI extensions                | `F-02` → `F-04` → `S-05` / `S-06` / `S-09` | AI pipeline and downstream features; `F-04` also gates `S-02` in Stream A.                                 |
+| C      | Authorization gate           | `F-03`                                     | Runs parallel to Stream A/D; must land before real-user (multi-user) deployment of S-01, S-04, S-09, S-10. |
+| D      | Profile, lifecycle & account | `S-04` / `S-07` / `S-10`                   | S-04 and S-10 now ready alongside Stream A; S-07 joins Stream A at `S-01`.                                 |
 
 ## Baseline
 
@@ -251,24 +252,37 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Cascading deletes across all domain tables plus Supabase Auth user. Must not leave orphaned data. Test with populated accounts.
 - **Status:** ready
 
+### S-11: Global toast notifications
+
+- **Outcome:** (UX infrastructure) app-wide toast/notification system — a single `<Toaster />` mounted in the layout that any island can imperatively trigger; replaces the per-island inline feedback used in S-03 and provides the notification surface S-09 (background-ops status) needs to announce async completions and failures
+- **Change ID:** global-toast-notifications
+- **PRD refs:** -- (UX/infrastructure enabler; no direct FR maps to this)
+- **Prerequisites:** S-03
+- **Parallel with:** S-08, S-06, S-07
+- **Blockers:** --
+- **Unknowns:** --
+- **Risk:** Low. Well-supported by `sonner` (already in shadcn/ui ecosystem). The main concern is ensuring the toaster is mounted once and reachable from all islands without prop drilling — a context provider or a global event bus covers this cleanly.
+- **Status:** proposed
+
 ## Backlog Handoff
 
-| Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
-|---|---|---|---|---|
-| F-01 | app-data-schema | Design and deploy Supabase application data schema | yes | Implemented — run `/10x-archive app-data-schema` |
-| F-02 | ai-generation-pipeline | Build AI generation pipeline with async processing | yes | Implemented (impl_reviewed) — run `/10x-archive ai-generation-pipeline` |
-| F-03 | data-authorization | RLS policies and API authorization on all application tables | yes | Run `/10x-plan data-authorization`; not on critical path -- implement before multi-user deployment |
-| F-04 | deterministic-generation-workflow | Replace agent runner with deterministic, step-logged generation workflow | yes | Run `/10x-plan deterministic-generation-workflow`; blocks S-02 |
-| S-01 | campaign-document-crud | Campaign & document CRUD pages | yes | Implemented — run `/10x-archive campaign-document-crud` |
-| S-02 | first-gated-generation | First gated generation (north star) | no | Blocked by F-04 (workflow refactor) |
-| S-03 | idea-review-and-copy | Idea review lifecycle & markdown copy | no | Blocked by S-02 |
-| S-04 | business-profile-wizard | Business profile wizard & edit form | yes | Run `/10x-plan business-profile-wizard`; F-03 must land before real-user exposure |
-| S-05 | manual-idea-creation | Manual idea creation with AI structuring | yes | Run `/10x-plan manual-idea-creation` |
-| S-06 | idea-regeneration | Single and batch idea regeneration with hints | no | Blocked by S-02 |
-| S-07 | campaign-document-lifecycle | Campaign & document lifecycle management | yes | Run `/10x-plan campaign-document-lifecycle` |
-| S-08 | publication-tracking | Publication metadata on published ideas | no | Blocked by S-03 |
-| S-09 | background-ops-status | Background operations status dashboard | yes | Run `/10x-plan background-ops-status` |
-| S-10 | account-deletion | Account and data deletion | yes | Run `/10x-plan account-deletion`; F-03 must land before real-user exposure |
+| Roadmap ID | Change ID                         | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                                                              |
+| ---------- | --------------------------------- | ------------------------------------------------------------------------ | --------------------- | -------------------------------------------------------------------------------------------------- |
+| F-01       | app-data-schema                   | Design and deploy Supabase application data schema                       | yes                   | Implemented — run `/10x-archive app-data-schema`                                                   |
+| F-02       | ai-generation-pipeline            | Build AI generation pipeline with async processing                       | yes                   | Implemented (impl_reviewed) — run `/10x-archive ai-generation-pipeline`                            |
+| F-03       | data-authorization                | RLS policies and API authorization on all application tables             | yes                   | Run `/10x-plan data-authorization`; not on critical path -- implement before multi-user deployment |
+| F-04       | deterministic-generation-workflow | Replace agent runner with deterministic, step-logged generation workflow | yes                   | Run `/10x-plan deterministic-generation-workflow`; blocks S-02                                     |
+| S-01       | campaign-document-crud            | Campaign & document CRUD pages                                           | yes                   | Implemented — run `/10x-archive campaign-document-crud`                                            |
+| S-02       | first-gated-generation            | First gated generation (north star)                                      | no                    | Blocked by F-04 (workflow refactor)                                                                |
+| S-03       | idea-review-and-copy              | Idea review lifecycle & markdown copy                                    | no                    | Blocked by S-02                                                                                    |
+| S-04       | business-profile-wizard           | Business profile wizard & edit form                                      | yes                   | Run `/10x-plan business-profile-wizard`; F-03 must land before real-user exposure                  |
+| S-05       | manual-idea-creation              | Manual idea creation with AI structuring                                 | yes                   | Run `/10x-plan manual-idea-creation`                                                               |
+| S-06       | idea-regeneration                 | Single and batch idea regeneration with hints                            | no                    | Blocked by S-02                                                                                    |
+| S-07       | campaign-document-lifecycle       | Campaign & document lifecycle management                                 | yes                   | Run `/10x-plan campaign-document-lifecycle`                                                        |
+| S-08       | publication-tracking              | Publication metadata on published ideas                                  | no                    | Blocked by S-03                                                                                    |
+| S-09       | background-ops-status             | Background operations status dashboard                                   | yes                   | Run `/10x-plan background-ops-status`                                                              |
+| S-10       | account-deletion                  | Account and data deletion                                                | yes                   | Run `/10x-plan account-deletion`; F-03 must land before real-user exposure                         |
+| S-11       | global-toast-notifications        | App-wide toast notification system                                       | yes                   | Generalizes S-03 inline feedback; backs S-09 async notifications. Run `/10x-plan global-toast-notifications` |
 
 ## Open Roadmap Questions
 

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import AddSourceDocumentForm from "@/components/campaigns/AddSourceDocumentForm";
 import AddInsightForm from "@/components/campaigns/AddInsightForm";
 import GenerateIdeasPanel from "@/components/campaigns/GenerateIdeasPanel";
+import IdeaActions from "@/components/campaigns/IdeaActions";
 
 const { id } = Astro.params;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
@@ -179,9 +180,16 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
                                 <span class="font-medium text-white">{idea.working_title}</span>
                                 {idea.hook && <p class="mt-1 truncate text-sm text-blue-100/60">{idea.hook}</p>}
                               </div>
-                              <span class="shrink-0 rounded-full border border-slate-500/40 bg-slate-500/30 px-2 py-0.5 text-xs text-slate-300">
-                                {idea.status}
-                              </span>
+                              <IdeaActions
+                                ideaId={idea.id}
+                                initialStatus={idea.status}
+                                idea={idea}
+                                refs={refs.map((r) => ({
+                                  documentTitle: r.document_versions?.documents.title ?? "Unknown document",
+                                  quoteSnippet: r.quote_snippet,
+                                }))}
+                                client:visible
+                              />
                             </div>
                           </summary>
 
