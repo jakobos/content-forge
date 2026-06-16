@@ -1,10 +1,10 @@
 ---
 change_id: deterministic-generation-workflow
 title: Deterministic generation workflow
-status: impl_reviewed
+status: archived
 created: 2026-06-13
-updated: 2026-06-13
-archived_at: null
+updated: 2026-06-16
+archived_at: 2026-06-16T14:34:00Z
 ---
 
 ## Notes
