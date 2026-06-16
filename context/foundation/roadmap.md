@@ -3,7 +3,7 @@ project: ContentForge
 version: 1
 status: draft
 created: 2026-05-31
-updated: 2026-06-15
+updated: 2026-06-16
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -40,7 +40,7 @@ Solo experts who build personal brands through social media have no tool that br
 | S-05 | manual-idea-creation              | describe an idea and get a structured version enriched with campaign documents                       | F-02, S-01             | US-02, FR-013                         | ready    |
 | S-06 | idea-regeneration                 | regenerate ideas with optional improvement hints                                                     | F-02, S-02             | FR-017, FR-018                        | ready    |
 | S-07 | campaign-document-lifecycle       | manage campaign and document lifecycles with full state machines                                     | S-01                   | FR-006, FR-007, FR-010, FR-011        | ready    |
-| S-08 | publication-tracking              | record publication details on published ideas                                                        | S-03                   | FR-019                                | ready    |
+| S-08 | publication-tracking              | record publication details on published ideas                                                        | S-03                   | FR-019                                | done     |
 | S-09 | background-ops-status             | see status of pending operations, get notified on completion/failure                                 | F-02                   | FR-021                                | ready    |
 | S-10 | account-deletion              | permanently delete account and all associated data                                                   | F-01                   | FR-020                                | ready    |
 | S-11 | global-toast-notifications    | (UX infra) app-wide toast/notification system for async operation feedback                           | S-03                   | --                                    | ready    |
@@ -224,7 +224,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** --
 - **Unknowns:** --
 - **Risk:** Low complexity. Depends on idea lifecycle from S-03 having a "published" state.
-- **Status:** ready
+- **Status:** done
 
 ### S-09: Background operations status
 
@@ -268,18 +268,18 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 | Roadmap ID | Change ID                         | Suggested issue title                                                    | Ready for `/10x-plan` | Notes                                                                                              |
 | ---------- | --------------------------------- | ------------------------------------------------------------------------ | --------------------- | -------------------------------------------------------------------------------------------------- |
-| F-01       | app-data-schema                   | Design and deploy Supabase application data schema                       | yes                   | Implemented — run `/10x-archive app-data-schema`                                                   |
-| F-02       | ai-generation-pipeline            | Build AI generation pipeline with async processing                       | yes                   | Implemented (impl_reviewed) — run `/10x-archive ai-generation-pipeline`                            |
+| F-01       | app-data-schema                   | Design and deploy Supabase application data schema                       | yes                   | Archived → `context/archive/2026-06-03-app-data-schema/`                                           |
+| F-02       | ai-generation-pipeline            | Build AI generation pipeline with async processing                       | yes                   | Archived → `context/archive/2026-06-07-ai-generation-pipeline/`                                    |
 | F-03       | data-authorization                | RLS policies and API authorization on all application tables             | yes                   | Run `/10x-plan data-authorization`; not on critical path -- implement before multi-user deployment |
-| F-04       | deterministic-generation-workflow | Replace agent runner with deterministic, step-logged generation workflow | yes                   | Implemented (impl_reviewed) -- run `/10x-archive deterministic-generation-workflow`                |
-| S-01       | campaign-document-crud            | Campaign & document CRUD pages                                           | yes                   | Implemented — run `/10x-archive campaign-document-crud`                                            |
+| F-04       | deterministic-generation-workflow | Replace agent runner with deterministic, step-logged generation workflow | yes                   | Archived → `context/archive/2026-06-13-deterministic-generation-workflow/`                         |
+| S-01       | campaign-document-crud            | Campaign & document CRUD pages                                           | yes                   | Archived → `context/archive/2026-06-06-campaign-document-crud/`                                    |
 | S-02       | first-gated-generation            | First gated generation (north star)                                      | yes                   | Implemented -- archived to `context/archive/2026-06-12-first-gated-generation/`                    |
-| S-03       | idea-review-and-copy              | Idea review lifecycle & markdown copy                                    | yes                   | Implemented -- run `/10x-archive idea-review-and-copy`                                             |
+| S-03       | idea-review-and-copy              | Idea review lifecycle & markdown copy                                    | yes                   | Archived → `context/archive/2026-06-14-idea-review-and-copy/`                                      |
 | S-04       | business-profile-wizard           | Business profile wizard & edit form                                      | yes                   | Run `/10x-plan business-profile-wizard`; F-03 must land before real-user exposure                  |
 | S-05       | manual-idea-creation              | Manual idea creation with AI structuring                                 | yes                   | Run `/10x-plan manual-idea-creation`                                                               |
 | S-06       | idea-regeneration                 | Single and batch idea regeneration with hints                            | yes                   | Run `/10x-plan idea-regeneration`                                                                  |
 | S-07       | campaign-document-lifecycle       | Campaign & document lifecycle management                                 | yes                   | Run `/10x-plan campaign-document-lifecycle`                                                        |
-| S-08       | publication-tracking              | Publication metadata on published ideas                                  | yes                   | Run `/10x-plan publication-tracking`                                                               |
+| S-08       | publication-tracking              | Publication metadata on published ideas                                  | yes                   | Archived → `context/archive/2026-06-15-publication-tracking/`                                      |
 | S-09       | background-ops-status             | Background operations status dashboard                                   | yes                   | Run `/10x-plan background-ops-status`                                                              |
 | S-10       | account-deletion                  | Account and data deletion                                                | yes                   | Run `/10x-plan account-deletion`; F-03 must land before real-user exposure                         |
 | S-11       | global-toast-notifications        | App-wide toast notification system                                       | yes                   | Run `/10x-plan global-toast-notifications`                                                         |
@@ -302,6 +302,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-- **F-04: (foundation) deterministic, step-logged generation workflow replaces the agentic tool-calling runner** -- Completed 2026-06-13 → `context/changes/deterministic-generation-workflow/`. Lesson: --.
+- **F-01: (foundation) Supabase application tables landed for all domain entities -- business profiles, campaigns, documents (with versions), ideas, fragment references; pgvector extension enabled for document embeddings** -- Archived 2026-06-16 → `context/archive/2026-06-03-app-data-schema/`. Lesson: --.
+- **F-02: (foundation) AI generation infrastructure operational -- LLM integration, document fragment extraction via pgvector embeddings, and async processing pattern** -- Archived 2026-06-16 → `context/archive/2026-06-07-ai-generation-pipeline/`. Lesson: --.
+- **F-04: (foundation) deterministic, step-logged generation workflow replaces the agentic tool-calling runner** -- Archived 2026-06-16 → `context/archive/2026-06-13-deterministic-generation-workflow/`. Lesson: --.
+- **S-01: user can create campaigns (goal/theme), view a campaign list, add source documents and user insights to a campaign** -- Archived 2026-06-16 → `context/archive/2026-06-06-campaign-document-crud/`. Lesson: --.
 - **S-02: user can generate structured post ideas from campaign documents -- AI analyzes documents and produces ideas with working title, hook, key points, source references, and dynamic optional fields; generation uses hardcoded profile defaults (profile wizard deferred to S-04)** — Archived 2026-06-14 → `context/archive/2026-06-12-first-gated-generation/`. Lesson: —.
-- **S-03: user can manage idea lifecycle (draft, accepted, published, archived, declined) and copy an accepted idea's full structured content in markdown** -- Completed 2026-06-15 → `context/changes/idea-review-and-copy/`. Lesson: --.
+- **S-03: user can manage idea lifecycle (draft, accepted, published, archived, declined) and copy an accepted idea's full structured content in markdown** -- Archived 2026-06-16 → `context/archive/2026-06-14-idea-review-and-copy/`. Lesson: --.
+- **S-08: user can attach publication metadata (URL, platform name, publish date, optional note) to a published idea** -- Archived 2026-06-16 → `context/archive/2026-06-15-publication-tracking/`. Lesson: --.
