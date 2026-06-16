@@ -1,10 +1,10 @@
 ---
 change_id: campaign-document-crud
 title: Campaign and document CRUD pages
-status: implemented
+status: archived
 created: 2026-06-06
-updated: 2026-06-06
-archived_at: null
+updated: 2026-06-16
+archived_at: 2026-06-16T14:34:00Z
 ---
 
 ## Notes
