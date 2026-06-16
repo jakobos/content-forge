@@ -217,28 +217,28 @@ None. No schema changes — the `publications` table already exists.
 
 #### Manual
 
-- [ ] 1.5 `PUT` creates then updates the same row (unique `idea_id` holds)
-- [ ] 1.6 `PUT` with malformed URL/date returns 400, writes nothing
-- [ ] 1.7 `PUT`/`DELETE` on non-published idea returns 409
-- [ ] 1.8 `PUT`/`DELETE` on other-user/nonexistent idea returns 404
-- [ ] 1.9 `DELETE` removes the row
-- [ ] 1.10 Unauthenticated request returns 401
+- [x] 1.5 `PUT` creates then updates the same row (unique `idea_id` holds)
+- [x] 1.6 `PUT` with malformed URL/date returns 400, writes nothing
+- [x] 1.7 `PUT`/`DELETE` on non-published idea returns 409
+- [x] 1.8 `PUT`/`DELETE` on other-user/nonexistent idea returns 404
+- [x] 1.9 `DELETE` removes the row
+- [x] 1.10 Unauthenticated request returns 401
 
 ### Phase 2: Publication island + page wiring
 
 #### Automated
 
-- [x] 2.1 `npx astro sync` succeeds
-- [x] 2.2 Type checking + lint passes: `npm run lint`
-- [x] 2.3 Prettier formatting passes: `npm run format`
-- [x] 2.4 `npm run build` succeeds
+- [x] 2.1 `npx astro sync` succeeds — 34cfa14
+- [x] 2.2 Type checking + lint passes: `npm run lint` — 34cfa14
+- [x] 2.3 Prettier formatting passes: `npm run format` — 34cfa14
+- [x] 2.4 `npm run build` succeeds — 34cfa14
 
 #### Manual
 
-- [ ] 2.5 Published cards show the section; non-published show nothing
-- [ ] 2.6 Add → persists and renders compact summary with clickable link, platform, date, note
-- [ ] 2.7 Edit pre-fills and updates same row; blanking a field clears it
-- [ ] 2.8 Remove deletes the row and restores the "Add" affordance
-- [ ] 2.9 Malformed URL/date shows inline error, no persist
-- [ ] 2.10 Publish reveals section (reload); archive hides it; re-publish shows empty form
-- [ ] 2.11 No console errors; no regressions elsewhere
+- [x] 2.5 Published cards show the section; non-published show nothing
+- [x] 2.6 Add → persists and renders compact summary with clickable link, platform, date, note
+- [x] 2.7 Edit pre-fills and updates same row; blanking a field clears it
+- [x] 2.8 Remove deletes the row and restores the "Add" affordance
+- [x] 2.9 Malformed URL/date shows inline error, no persist
+- [x] 2.10 Publish reveals section (reload); archive hides it; re-publish shows empty form
+- [x] 2.11 No console errors; no regressions elsewhere
