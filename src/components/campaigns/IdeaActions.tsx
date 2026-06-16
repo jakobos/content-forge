@@ -43,6 +43,13 @@ export default function IdeaActions({ ideaId, initialStatus, idea, refs }: Props
         const body = (await res.json().catch(() => ({}))) as { error?: string };
         throw new Error(body.error ?? `Request failed (${res.status})`);
       }
+
+      // Reload when the transition crosses the published boundary so the
+      // SSR-rendered publication section appears or disappears correctly.
+      if (previous === "published" || target === "published") {
+        window.location.reload();
+        return;
+      }
     } catch (err) {
       setStatus(previous); // rollback
       setErrorMsg(err instanceof Error ? err.message : "Update failed");
