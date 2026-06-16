@@ -2,9 +2,10 @@
 change_id: app-data-schema
 title: Design and deploy Supabase application data schema
 roadmap_id: F-01
-status: implemented
+status: archived
 created: 2026-06-03
-updated: 2026-06-06
+updated: 2026-06-16
+archived_at: 2026-06-16T14:34:00Z
 ---
 
 # app-data-schema
