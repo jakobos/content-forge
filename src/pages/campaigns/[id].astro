@@ -5,6 +5,8 @@ import AddSourceDocumentForm from "@/components/campaigns/AddSourceDocumentForm"
 import AddInsightForm from "@/components/campaigns/AddInsightForm";
 import GenerateIdeasPanel from "@/components/campaigns/GenerateIdeasPanel";
 import IdeaActions from "@/components/campaigns/IdeaActions";
+import IdeaPublication from "@/components/campaigns/IdeaPublication";
+import type { PublicationRow } from "@/lib/ideas/publication";
 
 const { id } = Astro.params;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
@@ -66,6 +68,20 @@ if (ideaIds.length > 0) {
     const bucket = fragRefsByIdeaId.get(typed.idea_id) ?? [];
     bucket.push(typed);
     fragRefsByIdeaId.set(typed.idea_id, bucket);
+  }
+}
+
+// Batch-query publication rows for all ideas on this page
+let publicationsByIdeaId = new Map<string, PublicationRow>();
+
+if (ideaIds.length > 0) {
+  const { data: pubRows } = await supabase
+    .from("publications")
+    .select("id, idea_id, url, platform_name, published_at, note, created_at")
+    .in("idea_id", ideaIds);
+
+  for (const row of pubRows ?? []) {
+    publicationsByIdeaId.set(row.idea_id, row);
   }
 }
 
@@ -298,6 +314,13 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
                                 </div>
                               </div>
                             )}
+
+                            <IdeaPublication
+                              ideaId={idea.id}
+                              status={idea.status}
+                              publication={publicationsByIdeaId.get(idea.id) ?? null}
+                              client:visible
+                            />
                           </div>
                         </details>
                       );

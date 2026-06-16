@@ -210,10 +210,10 @@ None. No schema changes — the `publications` table already exists.
 
 #### Automated
 
-- [x] 1.1 `npx astro sync` succeeds
-- [x] 1.2 Type checking + lint passes: `npm run lint`
-- [x] 1.3 Prettier formatting passes: `npm run format`
-- [x] 1.4 `npm run build` succeeds
+- [x] 1.1 `npx astro sync` succeeds — 6e4a7c9
+- [x] 1.2 Type checking + lint passes: `npm run lint` — 6e4a7c9
+- [x] 1.3 Prettier formatting passes: `npm run format` — 6e4a7c9
+- [x] 1.4 `npm run build` succeeds — 6e4a7c9
 
 #### Manual
 
@@ -228,10 +228,10 @@ None. No schema changes — the `publications` table already exists.
 
 #### Automated
 
-- [ ] 2.1 `npx astro sync` succeeds
-- [ ] 2.2 Type checking + lint passes: `npm run lint`
-- [ ] 2.3 Prettier formatting passes: `npm run format`
-- [ ] 2.4 `npm run build` succeeds
+- [x] 2.1 `npx astro sync` succeeds
+- [x] 2.2 Type checking + lint passes: `npm run lint`
+- [x] 2.3 Prettier formatting passes: `npm run format`
+- [x] 2.4 `npm run build` succeeds
 
 #### Manual
 
