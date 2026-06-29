@@ -213,9 +213,9 @@ No database schema changes. The behavioral change (skipping orphan ideas) is bac
 
 #### Automated
 
-- [x] 2.1 `npx astro sync` completes
-- [x] 2.2 `npm run lint` passes
-- [x] 2.3 `npm run build` passes
+- [x] 2.1 `npx astro sync` completes — 1736b00
+- [x] 2.2 `npm run lint` passes — 1736b00
+- [x] 2.3 `npm run build` passes — 1736b00
 
 #### Manual
 
@@ -225,6 +225,6 @@ No database schema changes. The behavioral change (skipping orphan ideas) is bac
 
 #### Automated
 
-- [ ] 3.1 `npm test` passes with all 5 test scenarios green
-- [ ] 3.2 `npm run lint` passes
-- [ ] 3.3 `npm run build` passes
+- [x] 3.1 `npm test` passes with all 5 test scenarios green
+- [x] 3.2 `npm run lint` passes
+- [x] 3.3 `npm run build` passes
