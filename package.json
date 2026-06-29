@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "deploy": "astro build && wrangler deploy",
     "db:push": "supabase db push --local",
-    "db:types": "supabase gen types --local --schema public > src/db/database.types.ts"
+    "db:types": "supabase gen types --local --schema public > src/db/database.types.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
@@ -57,6 +58,7 @@
     "supabase": "^2.23.4",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.59.2",
+    "vitest": "^4.1.9",
     "wrangler": "^4.94.0"
   },
   "overrides": {
