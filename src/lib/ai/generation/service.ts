@@ -136,7 +136,7 @@ async function callLLM(provider: Provider, systemPrompt: string, userPrompt: str
  * Persist ideas and fragment references server-side.
  * Returns the list of inserted idea ids.
  */
-async function persistIdeas(
+export async function persistIdeas(
   supabase: SupabaseClient<Database>,
   campaignId: string,
   userId: string,
@@ -147,6 +147,21 @@ async function persistIdeas(
   const ideaIds: string[] = [];
 
   for (const idea of ideas) {
+    // Resolve tags -> documentVersionId before inserting the idea row.
+    // Skip ideas whose source_references all resolve to unmatched tags — those
+    // would otherwise be inserted as orphans with no traceable fragment links.
+    const resolvedRefs = idea.source_references
+      .map((ref) => {
+        const documentVersionId = tagMap.get(ref.tag) ?? null;
+        if (!documentVersionId) return null; // Drop unmatched tags silently
+        return { document_version_id: documentVersionId, quote_snippet: ref.quote_snippet };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
+
+    if (resolvedRefs.length === 0) {
+      continue; // All tags hallucinated — do not persist this idea
+    }
+
     const { data: insertedIdea, error: ideaError } = await supabase
       .from("ideas")
       .insert({
@@ -175,20 +190,11 @@ async function persistIdeas(
 
     ideaIds.push(insertedIdea.id);
 
-    // Resolve tags -> documentVersionId and batch-insert all refs in one round-trip
-    const refsToInsert = idea.source_references
-      .map((ref) => {
-        const documentVersionId = tagMap.get(ref.tag) ?? null;
-        if (!documentVersionId) return null; // Drop unmatched tags silently
-        return { idea_id: insertedIdea.id, document_version_id: documentVersionId, quote_snippet: ref.quote_snippet };
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
-
-    if (refsToInsert.length > 0) {
-      const { error: refError } = await supabase.from("idea_fragment_references").insert(refsToInsert);
-      if (refError) {
-        throw new Error(`Failed to insert fragment references: ${refError.message}`);
-      }
+    // Batch-insert all resolved refs in one round-trip
+    const refsToInsert = resolvedRefs.map((r) => ({ idea_id: insertedIdea.id, ...r }));
+    const { error: refError } = await supabase.from("idea_fragment_references").insert(refsToInsert);
+    if (refError) {
+      throw new Error(`Failed to insert fragment references: ${refError.message}`);
     }
   }
 

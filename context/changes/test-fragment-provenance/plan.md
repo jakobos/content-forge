@@ -205,17 +205,17 @@ No database schema changes. The behavioral change (skipping orphan ideas) is bac
 
 #### Automated
 
-- [x] 1.1 `npm test` runs and exits 0
-- [x] 1.2 `npm run lint` passes
-- [x] 1.3 `npm run build` passes
+- [x] 1.1 `npm test` runs and exits 0 — 9704f89
+- [x] 1.2 `npm run lint` passes — 9704f89
+- [x] 1.3 `npm run build` passes — 9704f89
 
 ### Phase 2: Export and Fix persistIdeas
 
 #### Automated
 
-- [ ] 2.1 `npx astro sync` completes
-- [ ] 2.2 `npm run lint` passes
-- [ ] 2.3 `npm run build` passes
+- [x] 2.1 `npx astro sync` completes
+- [x] 2.2 `npm run lint` passes
+- [x] 2.3 `npm run build` passes
 
 #### Manual
 
