@@ -65,6 +65,7 @@ export default function CampaignCreateForm({ serverError }: Props) {
         <input
           id="title"
           name="title"
+          aria-label="Title"
           type="text"
           value={title}
           onChange={(e) => {
