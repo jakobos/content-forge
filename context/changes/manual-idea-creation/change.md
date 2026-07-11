@@ -1,9 +1,9 @@
 ---
 change_id: manual-idea-creation
 title: Manual idea creation with AI structuring
-status: implementing
+status: implemented
 created: 2026-07-11
-updated: 2026-07-11
+updated: 2026-07-12
 archived_at: null
 ---
 

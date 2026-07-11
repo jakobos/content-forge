@@ -266,15 +266,15 @@ No database migrations needed. The `ideas.source`, `ideas.original_description`,
 
 #### Automated
 
-- [x] 2.1 Types check passes (npx astro sync && npm run lint)
-- [x] 2.2 Build succeeds (npm run build)
+- [x] 2.1 Types check passes (npx astro sync && npm run lint) — f203486
+- [x] 2.2 Build succeeds (npm run build) — f203486
 
 #### Manual
 
-- [ ] 2.3 Describe your own idea button appears and respects hasDocuments gate
-- [ ] 2.4 Inline form with textarea, character count, and submit/cancel works correctly
-- [ ] 2.5 SSE flow triggers and page reloads on completion
-- [ ] 2.6 Manual idea displays with Manual badge and original description blockquote
-- [ ] 2.7 Structured fields and source references render correctly
-- [ ] 2.8 Error handling preserves description text
-- [ ] 2.9 Empty state text updated
+- [x] 2.3 Describe your own idea button appears and respects hasDocuments gate — f203486
+- [x] 2.4 Inline form with textarea, character count, and submit/cancel works correctly — f203486
+- [x] 2.5 SSE flow triggers and page reloads on completion — f203486
+- [x] 2.6 Manual idea displays with Manual badge and original description blockquote — f203486
+- [x] 2.7 Structured fields and source references render correctly — f203486
+- [x] 2.8 Error handling preserves description text — f203486
+- [x] 2.9 Empty state text updated — f203486
