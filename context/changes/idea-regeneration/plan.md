@@ -295,8 +295,8 @@ Add a `RegenerateForm` React component for both single-idea and batch regenerati
 
 #### Automated
 
-- [x] 2.1 TypeScript compiles after adding regenerate-ideas endpoint
-- [x] 2.2 Endpoint file exists and exports POST
+- [x] 2.1 TypeScript compiles after adding regenerate-ideas endpoint — bbf694a
+- [x] 2.2 Endpoint file exists and exports POST — bbf694a
 
 #### Manual
 
@@ -309,9 +309,9 @@ Add a `RegenerateForm` React component for both single-idea and batch regenerati
 
 #### Automated
 
-- [ ] 3.1 TypeScript compiles after adding RegenerateForm and page changes
-- [ ] 3.2 No jsx-a11y lint warnings
-- [ ] 3.3 Build succeeds
+- [x] 3.1 TypeScript compiles after adding RegenerateForm and page changes
+- [x] 3.2 No jsx-a11y lint warnings
+- [x] 3.3 Build succeeds
 
 #### Manual
 

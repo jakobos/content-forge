@@ -6,6 +6,7 @@ import AddInsightForm from "@/components/campaigns/AddInsightForm";
 import GenerateIdeasPanel from "@/components/campaigns/GenerateIdeasPanel";
 import IdeaActions from "@/components/campaigns/IdeaActions";
 import IdeaPublication from "@/components/campaigns/IdeaPublication";
+import RegenerateForm from "@/components/campaigns/RegenerateForm";
 import type { PublicationRow } from "@/lib/ideas/publication";
 
 const { id } = Astro.params;
@@ -40,7 +41,7 @@ const insights = (documents ?? []).filter((d) => d.type === "user_insight");
 const { data: ideasRaw } = await supabase
   .from("ideas")
   .select(
-    "id, working_title, hook, key_points, key_quotes, proposed_flow, insights_conclusions, call_to_action, storytelling_angle, target_audience_note, content_format_suggestion, generation_number, status, source, original_description, created_at",
+    "id, working_title, hook, key_points, key_quotes, proposed_flow, insights_conclusions, call_to_action, storytelling_angle, target_audience_note, content_format_suggestion, generation_number, status, source, original_description, improvement_hint, created_at",
   )
   .eq("campaign_id", id)
   .order("generation_number", { ascending: false })
@@ -184,7 +185,15 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
             <div class="grid gap-6">
               {generationGroups.map((group) => (
                 <div>
-                  <h3 class="mb-3 text-sm font-medium text-blue-100/50">Generation #{group.generationNumber}</h3>
+                  <div class="mb-3 flex items-center gap-3">
+                    <h3 class="text-sm font-medium text-blue-100/50">Generation #{group.generationNumber}</h3>
+                    <RegenerateForm
+                      campaignId={id}
+                      generationNumber={group.generationNumber}
+                      label="Regenerate batch"
+                      client:visible
+                    />
+                  </div>
                   <div class="grid gap-3">
                     {group.ideas.map((idea) => {
                       const refs = fragRefsByIdeaId.get(idea.id) ?? [];
@@ -222,6 +231,16 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
                                 </p>
                                 <blockquote class="mt-1 border-l-2 border-blue-400/40 pl-3 text-sm text-blue-100/60 italic">
                                   {idea.original_description}
+                                </blockquote>
+                              </div>
+                            )}
+                            {idea.improvement_hint && (
+                              <div>
+                                <p class="text-xs font-medium tracking-wide text-blue-100/40 uppercase">
+                                  Improvement hint
+                                </p>
+                                <blockquote class="mt-1 border-l-2 border-amber-400/40 pl-3 text-sm text-blue-100/60 italic">
+                                  {idea.improvement_hint}
                                 </blockquote>
                               </div>
                             )}
@@ -334,6 +353,13 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
                               ideaId={idea.id}
                               status={idea.status}
                               publication={publicationsByIdeaId.get(idea.id) ?? null}
+                              client:visible
+                            />
+
+                            <RegenerateForm
+                              campaignId={id}
+                              generationNumber={idea.generation_number}
+                              ideaId={idea.id}
                               client:visible
                             />
                           </div>
