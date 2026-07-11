@@ -9,6 +9,7 @@ import type { SearchService } from "./search";
 import {
   createGenerationService as createGenService,
   createStructuringService as createStructService,
+  createRegenerationService as createRegenService,
 } from "./generation/service";
 
 export interface AIContext {
@@ -17,6 +18,7 @@ export interface AIContext {
   searchService: SearchService;
   createGenerationService(config: { campaignId: string }): ReturnType<typeof createGenService>;
   createStructuringService(config: { campaignId: string }): ReturnType<typeof createStructService>;
+  createRegenerationService(config: { campaignId: string }): ReturnType<typeof createRegenService>;
 }
 
 /**
@@ -62,6 +64,15 @@ export function initializeAI(config: {
         supabase: config.supabase,
         userId: config.userId,
         campaignId: structConfig.campaignId,
+      });
+    },
+    createRegenerationService(regenConfig: { campaignId: string }) {
+      return createRegenService({
+        provider,
+        searchService,
+        supabase: config.supabase,
+        userId: config.userId,
+        campaignId: regenConfig.campaignId,
       });
     },
   };

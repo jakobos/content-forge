@@ -4,6 +4,8 @@ import type { Provider } from "@/lib/ai/providers";
 import type { SearchService } from "@/lib/ai/search";
 import { buildGenerationSystemPrompt, buildGenerationUserPrompt } from "@/lib/ai/prompts/generation";
 import { buildStructuringSystemPrompt, buildStructuringUserPrompt } from "@/lib/ai/prompts/structuring";
+import { buildRegenerationSystemPrompt, buildRegenerationUserPrompt } from "@/lib/ai/prompts/regeneration";
+import type { OriginalIdeaForPrompt } from "@/lib/ai/prompts/regeneration";
 import {
   IdeaOutputSchema,
   IdeaOutputJsonSchema,
@@ -178,6 +180,7 @@ export async function persistIdeas(
   generationNumber: number,
   ideas: ReturnType<typeof IdeaOutputSchema.parse>["ideas"],
   tagMap: Map<string, string>,
+  improvementHint?: string,
 ): Promise<string[]> {
   const ideaIds: string[] = [];
 
@@ -205,6 +208,7 @@ export async function persistIdeas(
         generation_number: generationNumber,
         source: "auto",
         status: "draft",
+        improvement_hint: improvementHint ?? null,
         working_title: idea.working_title,
         hook: idea.hook ?? null,
         key_points: idea.key_points ?? null,
@@ -499,6 +503,201 @@ export function createStructuringService(deps: GenerationServiceDeps) {
       yield { type: "done", ideaIds: [ideaId] };
     } catch (err) {
       const message = err instanceof Error ? err.message : "Structuring failed";
+      yield { type: "error", error: message };
+    }
+  }
+
+  return { run };
+}
+
+/**
+ * Fetch original ideas for regeneration: all ideas matching campaignId + generationNumber,
+ * optionally filtered to a single idea by ideaId.
+ * Returns the data in the shape needed by the regeneration prompt.
+ */
+async function fetchSourceIdeasForRegeneration(
+  supabase: SupabaseClient<Database>,
+  campaignId: string,
+  generationNumber: number,
+  ideaId?: string,
+): Promise<OriginalIdeaForPrompt[]> {
+  let query = supabase
+    .from("ideas")
+    .select(
+      "id, working_title, hook, key_points, key_quotes, proposed_flow, insights_conclusions, call_to_action, storytelling_angle, target_audience_note, content_format_suggestion",
+    )
+    .eq("campaign_id", campaignId)
+    .eq("generation_number", generationNumber)
+    .order("created_at", { ascending: true });
+
+  if (ideaId) {
+    query = query.eq("id", ideaId);
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw new Error(`Failed to fetch source ideas: ${error.message}`);
+
+  return data.map((idea) => ({
+    working_title: idea.working_title,
+    hook: idea.hook,
+    key_points: idea.key_points,
+    key_quotes: idea.key_quotes,
+    proposed_flow: idea.proposed_flow,
+    insights_conclusions: idea.insights_conclusions,
+    call_to_action: idea.call_to_action,
+    storytelling_angle: idea.storytelling_angle,
+    target_audience_note: idea.target_audience_note,
+    content_format_suggestion: idea.content_format_suggestion,
+  }));
+}
+
+/**
+ * Derive seed queries from the original ideas' content.
+ * Uses working_title + hook + first few key_points from each idea as retrieval anchors.
+ */
+function deriveRegenerationSeedQueries(ideas: OriginalIdeaForPrompt[]): string[] {
+  const queries: string[] = [];
+
+  for (const idea of ideas) {
+    const parts: string[] = [idea.working_title];
+    if (idea.hook) parts.push(idea.hook);
+    if (idea.key_points && idea.key_points.length > 0) {
+      parts.push(idea.key_points.slice(0, 3).join(" "));
+    }
+    const q = parts.join(" — ").slice(0, 500);
+    if (q.trim()) queries.push(q.trim());
+  }
+
+  // Dedupe
+  const seen = new Set<string>();
+  const deduped: string[] = [];
+  for (const q of queries) {
+    if (!seen.has(q)) {
+      seen.add(q);
+      deduped.push(q);
+    }
+  }
+
+  return deduped;
+}
+
+/**
+ * Create the regeneration service.
+ * Fetches original ideas, retrieves fresh fragments, builds regeneration prompts,
+ * and persists new ideas with improvement_hint populated.
+ */
+export function createRegenerationService(deps: GenerationServiceDeps) {
+  const { provider, searchService, supabase, userId, campaignId } = deps;
+
+  async function* run(params: {
+    generationNumber: number;
+    ideaId?: string;
+    hint?: string;
+    model?: string;
+    bgOpId: string;
+  }): AsyncGenerator<GenerationProgressEvent> {
+    const model = params.model ?? DEFAULT_MODEL;
+
+    try {
+      // ── Step 1: Fetch campaign meta + source ideas ──────────────────────────
+      yield { type: "retrieving" };
+
+      const [campaign, sourceIdeas] = await Promise.all([
+        fetchCampaignMeta(supabase, campaignId),
+        fetchSourceIdeasForRegeneration(supabase, campaignId, params.generationNumber, params.ideaId),
+      ]);
+
+      if (sourceIdeas.length === 0) {
+        throw new Error("No source ideas found for the given generation number");
+      }
+
+      const batchSize = sourceIdeas.length;
+
+      // ── Step 2: Derive seed queries from original ideas ─────────────────────
+      const seedQueries = deriveRegenerationSeedQueries(sourceIdeas);
+
+      // ── Step 3: Retrieve tagged fragments ───────────────────────────────────
+      let fragments: TaggedFragment[] = [];
+      if (seedQueries.length > 0) {
+        fragments = await retrieveTaggedFragments(searchService, supabase, campaignId, seedQueries);
+      }
+
+      const tagMap = new Map<string, string>(fragments.map((f) => [f.tag, f.documentVersionId]));
+
+      // ── Step 4: Resolve business profile ────────────────────────────────────
+      const profile = await resolveBusinessProfile(supabase, userId);
+
+      // Store debug info in background_operations.input_ref
+      await supabase
+        .from("background_operations")
+        .update({
+          input_ref: {
+            campaign_id: campaignId,
+            generation_number: params.generationNumber,
+            idea_id: params.ideaId ?? null,
+            hint: params.hint ?? null,
+            seed_queries: seedQueries,
+            fragment_count: fragments.length,
+            tag_map: Object.fromEntries(tagMap),
+          },
+        })
+        .eq("id", params.bgOpId);
+
+      // ── Step 5: Build regeneration prompts ──────────────────────────────────
+      const systemPrompt = buildRegenerationSystemPrompt(profile);
+      const userPrompt = buildRegenerationUserPrompt({
+        originalIdeas: sourceIdeas,
+        campaignTitle: campaign.title,
+        campaignGoal: campaign.goal,
+        campaignDescription: campaign.description,
+        batchSize,
+        fragments,
+        hint: params.hint,
+      });
+
+      // ── Step 6: Single structured-output LLM call (with one auto-retry) ─────
+      yield { type: "generating" };
+
+      let rawText: string;
+      try {
+        rawText = await callLLM(provider, systemPrompt, userPrompt, model);
+      } catch (err) {
+        throw new Error(`LLM call failed: ${err instanceof Error ? err.message : String(err)}`);
+      }
+
+      // ── Step 7: Validate output (retry once on failure) ──────────────────────
+      let parsed = parseAndValidate(rawText);
+      if (!parsed) {
+        try {
+          rawText = await callLLM(provider, systemPrompt, userPrompt, model);
+        } catch (err) {
+          throw new Error(`LLM retry failed: ${err instanceof Error ? err.message : String(err)}`);
+        }
+        parsed = parseAndValidate(rawText);
+        if (!parsed) {
+          throw new Error("LLM output failed schema validation after retry");
+        }
+      }
+
+      // ── Step 8: Persist ideas + fragment references ──────────────────────────
+      yield { type: "saving" };
+
+      const generationNumber = await autoIncrementGenerationNumber(supabase, campaignId);
+      const ideaIds = await persistIdeas(
+        supabase,
+        campaignId,
+        userId,
+        generationNumber,
+        parsed.ideas,
+        tagMap,
+        params.hint,
+      );
+
+      // ── Step 9: Done ─────────────────────────────────────────────────────────
+      yield { type: "done", ideaIds };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Regeneration failed";
       yield { type: "error", error: message };
     }
   }
