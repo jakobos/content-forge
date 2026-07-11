@@ -289,7 +289,7 @@ Add a `RegenerateForm` React component for both single-idea and batch regenerati
 
 #### Manual
 
-- [ ] 1.3 Review prompt text for clarity and correct LLM instruction
+- [x] 1.3 Review prompt text for clarity and correct LLM instruction
 
 ### Phase 2: Backend — API endpoint
 
@@ -300,23 +300,23 @@ Add a `RegenerateForm` React component for both single-idea and batch regenerati
 
 #### Manual
 
-- [ ] 2.3 Test endpoint with curl: valid body returns SSE stream
-- [ ] 2.4 Verify background_operations row created with correct type and status transitions
-- [ ] 2.5 Verify new ideas in DB with correct generation_number and improvement_hint
-- [ ] 2.6 Verify original ideas unchanged
+- [x] 2.3 Test endpoint with curl: valid body returns SSE stream
+- [x] 2.4 Verify background_operations row created with correct type and status transitions
+- [x] 2.5 Verify new ideas in DB with correct generation_number and improvement_hint
+- [x] 2.6 Verify original ideas unchanged
 
 ### Phase 3: Frontend — Regeneration UI controls
 
 #### Automated
 
-- [x] 3.1 TypeScript compiles after adding RegenerateForm and page changes
-- [x] 3.2 No jsx-a11y lint warnings
-- [x] 3.3 Build succeeds
+- [x] 3.1 TypeScript compiles after adding RegenerateForm and page changes — 5dee24d
+- [x] 3.2 No jsx-a11y lint warnings — 5dee24d
+- [x] 3.3 Build succeeds — 5dee24d
 
 #### Manual
 
-- [ ] 3.4 Single idea regeneration with hint produces new generation group with 1 idea
-- [ ] 3.5 Batch regeneration produces new generation group with same count as original
-- [ ] 3.6 Old ideas remain in original generation groups
-- [ ] 3.7 Improvement hint displayed on regenerated ideas
-- [ ] 3.8 Error handling: error state renders with Try Again button
+- [x] 3.4 Single idea regeneration with hint produces new generation group with 1 idea
+- [x] 3.5 Batch regeneration produces new generation group with same count as original
+- [x] 3.6 Old ideas remain in original generation groups
+- [x] 3.7 Improvement hint displayed on regenerated ideas
+- [x] 3.8 Error handling: error state renders with Try Again button
