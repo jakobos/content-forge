@@ -252,22 +252,22 @@ No database migrations needed. The `ideas.source`, `ideas.original_description`,
 
 #### Automated
 
-- [x] 1.1 Types check passes (npx astro sync && npm run lint)
-- [x] 1.2 Build succeeds (npm run build)
+- [x] 1.1 Types check passes (npx astro sync && npm run lint) — aa8be4c
+- [x] 1.2 Build succeeds (npm run build) — aa8be4c
 
 #### Manual
 
-- [ ] 1.3 POST to /api/ai/structure-idea returns SSE stream with correct event sequence
-- [ ] 1.4 Persisted idea has source 'manual' and original_description populated
-- [ ] 1.5 Fragment references created when fragments match; idea persisted without refs when none match
-- [ ] 1.6 Background operation row transitions through pending -> in_progress -> completed
+- [x] 1.3 POST to /api/ai/structure-idea returns SSE stream with correct event sequence — aa8be4c
+- [x] 1.4 Persisted idea has source 'manual' and original_description populated — aa8be4c
+- [x] 1.5 Fragment references created when fragments match; idea persisted without refs when none match — aa8be4c
+- [x] 1.6 Background operation row transitions through pending -> in_progress -> completed — aa8be4c
 
 ### Phase 2: Frontend — Manual Idea Form and Display
 
 #### Automated
 
-- [ ] 2.1 Types check passes (npx astro sync && npm run lint)
-- [ ] 2.2 Build succeeds (npm run build)
+- [x] 2.1 Types check passes (npx astro sync && npm run lint)
+- [x] 2.2 Build succeeds (npm run build)
 
 #### Manual
 

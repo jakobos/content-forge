@@ -40,7 +40,7 @@ const insights = (documents ?? []).filter((d) => d.type === "user_insight");
 const { data: ideasRaw } = await supabase
   .from("ideas")
   .select(
-    "id, working_title, hook, key_points, key_quotes, proposed_flow, insights_conclusions, call_to_action, storytelling_angle, target_audience_note, content_format_suggestion, generation_number, status, created_at",
+    "id, working_title, hook, key_points, key_quotes, proposed_flow, insights_conclusions, call_to_action, storytelling_angle, target_audience_note, content_format_suggestion, generation_number, status, source, original_description, created_at",
   )
   .eq("campaign_id", id)
   .order("generation_number", { ascending: false })
@@ -178,7 +178,7 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
         {
           ideas.length === 0 ? (
             <p class="rounded-xl border border-white/10 bg-white/5 px-4 py-8 text-center text-sm text-blue-100/50">
-              No ideas yet. Use Generate Ideas above to create your first batch.
+              No ideas yet. Generate ideas from your documents or describe your own above.
             </p>
           ) : (
             <div class="grid gap-6">
@@ -194,6 +194,11 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
                             <div class="flex items-start justify-between gap-2">
                               <div class="min-w-0 flex-1">
                                 <span class="font-medium text-white">{idea.working_title}</span>
+                                {idea.source === "manual" && (
+                                  <span class="ml-2 rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-300">
+                                    Manual
+                                  </span>
+                                )}
                                 {idea.hook && <p class="mt-1 truncate text-sm text-blue-100/60">{idea.hook}</p>}
                               </div>
                               <IdeaActions
@@ -210,6 +215,16 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
                           </summary>
 
                           <div class="space-y-4 border-t border-white/10 px-4 py-4">
+                            {idea.source === "manual" && idea.original_description && (
+                              <div>
+                                <p class="text-xs font-medium tracking-wide text-blue-100/40 uppercase">
+                                  Your description
+                                </p>
+                                <blockquote class="mt-1 border-l-2 border-blue-400/40 pl-3 text-sm text-blue-100/60 italic">
+                                  {idea.original_description}
+                                </blockquote>
+                              </div>
+                            )}
                             {idea.hook && (
                               <div>
                                 <p class="text-xs font-medium tracking-wide text-blue-100/40 uppercase">Hook</p>
