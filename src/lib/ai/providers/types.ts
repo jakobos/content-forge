@@ -1,8 +1,6 @@
 // Content types for multimodal support
 export type ContentPart =
-  | { type: "text"; text: string }
-  | { type: "image"; uri: string }
-  | { type: "image"; data: string; mimeType: string };
+  { type: "text"; text: string } | { type: "image"; uri: string } | { type: "image"; data: string; mimeType: string };
 
 export type Content = string | ContentPart[];
 

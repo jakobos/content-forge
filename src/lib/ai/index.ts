@@ -6,13 +6,17 @@ import { createEmbeddingClient, createEmbeddingService } from "./embeddings";
 import type { EmbeddingService } from "./embeddings";
 import { createSearchService } from "./search";
 import type { SearchService } from "./search";
-import { createGenerationService as createGenService } from "./generation/service";
+import {
+  createGenerationService as createGenService,
+  createStructuringService as createStructService,
+} from "./generation/service";
 
 export interface AIContext {
   provider: Provider;
   embeddingService: EmbeddingService;
   searchService: SearchService;
   createGenerationService(config: { campaignId: string }): ReturnType<typeof createGenService>;
+  createStructuringService(config: { campaignId: string }): ReturnType<typeof createStructService>;
 }
 
 /**
@@ -49,6 +53,15 @@ export function initializeAI(config: {
         supabase: config.supabase,
         userId: config.userId,
         campaignId: genConfig.campaignId,
+      });
+    },
+    createStructuringService(structConfig: { campaignId: string }) {
+      return createStructService({
+        provider,
+        searchService,
+        supabase: config.supabase,
+        userId: config.userId,
+        campaignId: structConfig.campaignId,
       });
     },
   };

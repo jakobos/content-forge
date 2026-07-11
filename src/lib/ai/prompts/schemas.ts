@@ -79,3 +79,70 @@ export const IdeaOutputJsonSchema: Record<string, unknown> = {
   required: ["ideas"],
   additionalProperties: false,
 };
+
+/**
+ * Relaxed schema for manually structured ideas.
+ * source_references and key_quotes have no .min(1) — valid without fragment enrichment.
+ */
+export const ManualIdeaSchema = z.object({
+  working_title: z.string(),
+  hook: z.string().optional().nullable(),
+  key_points: z.array(z.string()).optional().nullable(),
+  /** Verbatim quotes from fragments — empty is valid for manual ideas. */
+  key_quotes: z.array(z.string()),
+  proposed_flow: z.string().optional().nullable(),
+  insights_conclusions: z.string().optional().nullable(),
+  call_to_action: z.string().optional().nullable(),
+  storytelling_angle: z.string().optional().nullable(),
+  target_audience_note: z.string().optional().nullable(),
+  content_format_suggestion: z.string().optional().nullable(),
+  /** Fragment citations — empty is valid when no relevant fragments found. */
+  source_references: z.array(SourceReferenceSchema),
+});
+
+export const ManualIdeaOutputSchema = z.object({
+  idea: ManualIdeaSchema,
+});
+
+export type ManualIdeaOutput = z.infer<typeof ManualIdeaOutputSchema>;
+
+/**
+ * Plain JSON Schema equivalent of ManualIdeaOutputSchema.
+ * Used as responseFormat.jsonSchema.schema for native structured output.
+ */
+export const ManualIdeaOutputJsonSchema: Record<string, unknown> = {
+  type: "object",
+  properties: {
+    idea: {
+      type: "object",
+      properties: {
+        working_title: { type: "string" },
+        hook: { type: ["string", "null"] },
+        key_points: { type: ["array", "null"], items: { type: "string" } },
+        key_quotes: { type: "array", items: { type: "string" } },
+        proposed_flow: { type: ["string", "null"] },
+        insights_conclusions: { type: ["string", "null"] },
+        call_to_action: { type: ["string", "null"] },
+        storytelling_angle: { type: ["string", "null"] },
+        target_audience_note: { type: ["string", "null"] },
+        content_format_suggestion: { type: ["string", "null"] },
+        source_references: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              tag: { type: "string" },
+              quote_snippet: { type: "string" },
+            },
+            required: ["tag", "quote_snippet"],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["working_title", "key_quotes", "source_references"],
+      additionalProperties: false,
+    },
+  },
+  required: ["idea"],
+  additionalProperties: false,
+};
