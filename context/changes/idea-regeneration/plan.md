@@ -284,8 +284,8 @@ Add a `RegenerateForm` React component for both single-idea and batch regenerati
 
 #### Automated
 
-- [x] 1.1 TypeScript compiles after adding regeneration prompts and service
-- [x] 1.2 Imports resolve: createRegenerationService accessible from @/lib/ai
+- [x] 1.1 TypeScript compiles after adding regeneration prompts and service — b8e6fe8
+- [x] 1.2 Imports resolve: createRegenerationService accessible from @/lib/ai — b8e6fe8
 
 #### Manual
 
@@ -295,8 +295,8 @@ Add a `RegenerateForm` React component for both single-idea and batch regenerati
 
 #### Automated
 
-- [ ] 2.1 TypeScript compiles after adding regenerate-ideas endpoint
-- [ ] 2.2 Endpoint file exists and exports POST
+- [x] 2.1 TypeScript compiles after adding regenerate-ideas endpoint
+- [x] 2.2 Endpoint file exists and exports POST
 
 #### Manual
 
