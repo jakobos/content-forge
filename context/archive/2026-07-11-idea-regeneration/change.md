@@ -1,10 +1,10 @@
 ---
 change_id: idea-regeneration
 title: Single and batch idea regeneration with improvement hints
-status: implemented
+status: archived
 created: 2026-07-11
-updated: 2026-07-11
-archived_at: null
+updated: 2026-07-13
+archived_at: 2026-07-13T14:09:00Z
 ---
 
 ## Notes

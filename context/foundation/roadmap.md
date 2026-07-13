@@ -3,7 +3,7 @@ project: ContentForge
 version: 1
 status: draft
 created: 2026-05-31
-updated: 2026-07-11
+updated: 2026-07-13
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -38,7 +38,7 @@ Solo experts who build personal brands through social media have no tool that br
 | S-03 | idea-review-and-copy              | review ideas (accept/decline), copy in markdown                                                      | S-02                   | FR-015, FR-016                        | done     |
 | S-04 | business-profile-wizard           | complete and edit a business profile that influences generation                                      | F-01                   | FR-001, FR-002, FR-003                | ready    |
 | S-05 | manual-idea-creation              | describe an idea and get a structured version enriched with campaign documents                       | F-02, S-01             | US-02, FR-013                         | done     |
-| S-06 | idea-regeneration                 | regenerate ideas with optional improvement hints                                                     | F-02, S-02             | FR-017, FR-018                        | ready    |
+| S-06 | idea-regeneration                 | regenerate ideas with optional improvement hints                                                     | F-02, S-02             | FR-017, FR-018                        | done     |
 | S-07 | campaign-document-lifecycle       | manage campaign and document lifecycles with full state machines                                     | S-01                   | FR-006, FR-007, FR-010, FR-011        | ready    |
 | S-08 | publication-tracking              | record publication details on published ideas                                                        | S-03                   | FR-019                                | done     |
 | S-09 | background-ops-status             | see status of pending operations, get notified on completion/failure                                 | F-02                   | FR-021                                | ready    |
@@ -200,7 +200,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** --
 - **Unknowns:** --
 - **Risk:** Regeneration must preserve old ideas alongside new ones -- data model must support multiple generations per campaign. This should be designed in F-01's schema.
-- **Status:** ready
+- **Status:** done
 
 ### S-07: Campaign & document lifecycle
 
@@ -310,3 +310,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-03: user can manage idea lifecycle (draft, accepted, published, archived, declined) and copy an accepted idea's full structured content in markdown** -- Archived 2026-06-16 → `context/archive/2026-06-14-idea-review-and-copy/`. Lesson: --.
 - **S-08: user can attach publication metadata (URL, platform name, publish date, optional note) to a published idea** -- Archived 2026-06-16 → `context/archive/2026-06-15-publication-tracking/`. Lesson: --.
 - **S-05: user can describe an idea in their own words and get a structured post idea enriched with relevant fragments from campaign documents** — Archived 2026-07-11 → `context/archive/2026-07-11-manual-idea-creation/`. Lesson: —.
+- **S-06: user can regenerate a single idea or an entire batch with an optional improvement hint (up to 200 chars); previous ideas stay alongside new ones** — Archived 2026-07-13 → `context/archive/2026-07-11-idea-regeneration/`. Lesson: —.
