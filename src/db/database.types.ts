@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       background_operations: {
@@ -154,6 +179,7 @@ export type Database = {
           created_at: string
           document_version_id: string
           embedding: string
+          fts: unknown
           id: string
           metadata: Json | null
         }
@@ -163,6 +189,7 @@ export type Database = {
           created_at?: string
           document_version_id: string
           embedding: string
+          fts?: unknown
           id?: string
           metadata?: Json | null
         }
@@ -172,6 +199,7 @@ export type Database = {
           created_at?: string
           document_version_id?: string
           embedding?: string
+          fts?: unknown
           id?: string
           metadata?: Json | null
         }
@@ -431,30 +459,30 @@ export type Database = {
     Functions: {
       match_document_chunks: {
         Args: {
-          query_embedding: string
-          match_threshold: number
-          match_count: number
           filter_campaign_id?: string
+          match_count: number
+          match_threshold: number
+          query_embedding: string
         }
         Returns: {
-          id: string
-          document_version_id: string
           chunk_index: number
           chunk_text: string
+          document_version_id: string
+          id: string
           similarity: number
         }[]
       }
       search_document_chunks: {
         Args: {
-          search_query: string
-          result_limit?: number
           filter_campaign_id?: string
+          result_limit?: number
+          search_query: string
         }
         Returns: {
-          id: string
-          document_version_id: string
           chunk_index: number
           chunk_text: string
+          document_version_id: string
+          id: string
           rank: number
         }[]
       }
@@ -596,6 +624,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       campaign_status: ["draft", "active", "completed", "archived"],
