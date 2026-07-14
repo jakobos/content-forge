@@ -1,10 +1,10 @@
 ---
 change_id: data-authorization
 title: RLS policies and API authorization on all application tables
-status: implemented
+status: archived
 created: 2026-07-13
 updated: 2026-07-14
-archived_at: null
+archived_at: 2026-07-14T13:54:39Z
 ---
 
 ## Notes
