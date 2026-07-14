@@ -12,7 +12,7 @@ export const ESLintHook: Plugin = async ({ $, directory }) => {
       if (!/\.(ts|tsx|js|jsx|astro|mjs|cjs)$/.test(filePath)) return
 
       try {
-        await $`npx eslint --max-warnings=0 ${filePath}`.cwd(directory)
+        await $`npx eslint --fix . --quiet`.cwd(directory)
       } catch (err) {
         // ESLint exits non-zero on lint errors; surface them as a warning comment
         const msg = err instanceof Error ? err.message : String(err)

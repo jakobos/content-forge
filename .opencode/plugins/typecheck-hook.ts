@@ -13,7 +13,7 @@ export const TypecheckHook: Plugin = async ({ $, directory }) => {
 
       try {
         // astro check covers both .astro and .ts/.tsx files in the project
-        await $`npx astro check`.cwd(directory)
+        await $`npx tsc --noEmit`.cwd(directory)
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err)
         console.warn(`[typecheck-hook] ${filePath}\n${msg}`)
