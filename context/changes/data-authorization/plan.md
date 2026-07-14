@@ -243,14 +243,14 @@ Apply the migration to the local Supabase instance with `supabase migration up`,
 
 #### Automated
 
-- [x] 2.1 `supabase migration up` completes without errors
-- [x] 2.2 Types regenerated (`src/db/database.types.ts` up to date)
-- [x] 2.3 `npx astro sync` exits 0
-- [x] 2.4 `npm run lint` exits 0
-- [x] 2.5 `npm run build` exits 0
+- [x] 2.1 `supabase migration up` completes without errors — 1f0a88a
+- [x] 2.2 Types regenerated (`src/db/database.types.ts` up to date) — 1f0a88a
+- [x] 2.3 `npx astro sync` exits 0 — 1f0a88a
+- [x] 2.4 `npm run lint` exits 0 — 1f0a88a
+- [x] 2.5 `npm run build` exits 0 — 1f0a88a
 
 #### Manual
 
-- [x] 2.6 App loads locally and core flows work (sign in, campaigns, documents, idea generation)
-- [x] 2.7 Rollback script reviewed (down-migration SQL is syntactically correct)
-- [x] 2.8 Cross-user isolation verified (user B cannot see user A's data) -- if second test user available
+- [x] 2.6 App loads locally and core flows work (sign in, campaigns, documents, idea generation) — 1f0a88a
+- [x] 2.7 Rollback script reviewed (down-migration SQL is syntactically correct) — 1f0a88a
+- [x] 2.8 Cross-user isolation verified (user B cannot see user A's data) -- if second test user available — 1f0a88a
