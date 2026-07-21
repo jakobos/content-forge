@@ -97,8 +97,8 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
   }
 
   return (
-    <div className="border-t border-white/10 pt-4">
-      <p className="mb-2 text-xs font-medium tracking-wide text-blue-100/40 uppercase">Publication</p>
+    <div className="border-border border-t pt-4">
+      <p className="text-muted-foreground/50 mb-2 text-xs font-medium tracking-wide uppercase">Publication</p>
 
       {!showForm && publication && (
         <div className="space-y-1">
@@ -107,29 +107,29 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
               href={publication.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block truncate text-sm text-purple-300 hover:underline"
+              className="text-primary block truncate text-sm hover:underline"
             >
               {publication.url}
             </a>
           )}
           {publication.platform_name && (
-            <p className="text-sm text-blue-100/70">
-              <span className="text-blue-100/40">Platform: </span>
+            <p className="text-muted-foreground text-sm">
+              <span className="text-muted-foreground/50">Platform: </span>
               {publication.platform_name}
             </p>
           )}
           {publication.published_at && (
-            <p className="text-sm text-blue-100/70">
-              <span className="text-blue-100/40">Published: </span>
+            <p className="text-muted-foreground text-sm">
+              <span className="text-muted-foreground/50">Published: </span>
               {new Date(publication.published_at).toLocaleDateString()}
             </p>
           )}
-          {publication.note && <p className="text-sm text-blue-100/70 italic">{publication.note}</p>}
+          {publication.note && <p className="text-muted-foreground text-sm italic">{publication.note}</p>}
           <div className="mt-2 flex gap-2">
             <button
               onClick={openForm}
               disabled={inFlight}
-              className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs text-blue-100/70 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+              className="border-border bg-card/50 text-muted-foreground hover:bg-card/70 rounded-md border px-2 py-0.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               Edit
             </button>
@@ -138,28 +138,28 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
                 void handleRemove();
               }}
               disabled={inFlight}
-              className="rounded-md border border-red-500/20 bg-red-500/5 px-2 py-0.5 text-xs text-red-400 transition-colors hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+              className="border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10 rounded-md border px-2 py-0.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               {inFlight ? "Removing..." : "Remove"}
             </button>
           </div>
-          {errorMsg && <p className="mt-1 text-xs text-red-400">{errorMsg}</p>}
+          {errorMsg && <p className="text-destructive mt-1 text-xs">{errorMsg}</p>}
         </div>
       )}
 
       {!showForm && !publication && (
         <div>
-          <button onClick={openForm} className="text-sm text-purple-300 transition-colors hover:text-purple-100">
+          <button onClick={openForm} className="text-primary hover:text-primary/80 text-sm transition-colors">
             + Add publication details
           </button>
-          {errorMsg && <p className="mt-1 text-xs text-red-400">{errorMsg}</p>}
+          {errorMsg && <p className="text-destructive mt-1 text-xs">{errorMsg}</p>}
         </div>
       )}
 
       {showForm && (
         <form onSubmit={(e) => void handleSave(e)} className="space-y-3">
           <div>
-            <label className="block text-xs text-blue-100/50">
+            <label className="text-muted-foreground/60 block text-xs">
               URL
               <input
                 type="url"
@@ -168,12 +168,12 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
                   setUrl(e.target.value);
                 }}
                 placeholder="https://example.com/article"
-                className="mt-1 block w-full rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder:text-blue-100/30 focus:border-purple-500/50 focus:outline-none"
+                className="border-input bg-input text-foreground placeholder:text-muted-foreground/50 focus:border-ring/50 mt-1 block w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none"
               />
             </label>
           </div>
           <div>
-            <label className="block text-xs text-blue-100/50">
+            <label className="text-muted-foreground/60 block text-xs">
               Platform
               <input
                 type="text"
@@ -183,12 +183,12 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
                 }}
                 placeholder="e.g. LinkedIn, Medium, YouTube"
                 maxLength={200}
-                className="mt-1 block w-full rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder:text-blue-100/30 focus:border-purple-500/50 focus:outline-none"
+                className="border-input bg-input text-foreground placeholder:text-muted-foreground/50 focus:border-ring/50 mt-1 block w-full rounded-md border px-3 py-1.5 text-sm focus:outline-none"
               />
             </label>
           </div>
           <div>
-            <label className="block text-xs text-blue-100/50">
+            <label className="text-muted-foreground/60 block text-xs">
               Publish date
               <input
                 type="date"
@@ -196,12 +196,12 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
                 onChange={(e) => {
                   setPublishedAt(e.target.value);
                 }}
-                className="mt-1 block rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white focus:border-purple-500/50 focus:outline-none"
+                className="border-input bg-input text-foreground focus:border-ring/50 mt-1 block rounded-md border px-3 py-1.5 text-sm focus:outline-none"
               />
             </label>
           </div>
           <div>
-            <label className="block text-xs text-blue-100/50">
+            <label className="text-muted-foreground/60 block text-xs">
               Note
               <textarea
                 value={note}
@@ -211,16 +211,16 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
                 rows={2}
                 maxLength={2000}
                 placeholder="Optional note"
-                className="mt-1 block w-full resize-none rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-white placeholder:text-blue-100/30 focus:border-purple-500/50 focus:outline-none"
+                className="border-input bg-input text-foreground placeholder:text-muted-foreground/50 focus:border-ring/50 mt-1 block w-full resize-none rounded-md border px-3 py-1.5 text-sm focus:outline-none"
               />
             </label>
           </div>
-          {errorMsg && <p className="text-xs text-red-400">{errorMsg}</p>}
+          {errorMsg && <p className="text-destructive text-xs">{errorMsg}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
               disabled={inFlight}
-              className="rounded-md border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs text-purple-300 transition-colors hover:bg-purple-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+              className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-md border px-3 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               {inFlight ? "Saving..." : "Save"}
             </button>
@@ -228,7 +228,7 @@ export default function IdeaPublication({ ideaId, status, publication }: Props) 
               type="button"
               onClick={closeForm}
               disabled={inFlight}
-              className="rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-blue-100/70 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+              className="border-border bg-card/50 text-muted-foreground hover:bg-card/70 rounded-md border px-3 py-1 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               Cancel
             </button>

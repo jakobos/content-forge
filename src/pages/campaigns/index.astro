@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
+import { CAMPAIGN_STATUS_CLASS, CAMPAIGN_STATUS_LABEL } from "@/lib/campaigns/lifecycle";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const { user } = Astro.locals;
@@ -42,19 +43,8 @@ if (supabase && user) {
   }
 }
 
-const statusLabel: Record<string, string> = {
-  draft: "Draft",
-  active: "Active",
-  completed: "Completed",
-  archived: "Archived",
-};
-
-const statusClass: Record<string, string> = {
-  draft: "bg-muted/50 text-muted-foreground border-muted-foreground/40",
-  active: "bg-accent/20 text-accent border-accent/40",
-  completed: "bg-primary/20 text-primary border-primary/40",
-  archived: "bg-muted/30 text-muted-foreground/60 border-muted-foreground/30",
-};
+const statusLabel = CAMPAIGN_STATUS_LABEL;
+const statusClass = CAMPAIGN_STATUS_CLASS;
 ---
 
 <Layout title="Campaigns">
@@ -92,7 +82,7 @@ const statusClass: Record<string, string> = {
           <div class="grid gap-4">
             {campaigns.map((campaign) => {
               const counts = docCounts.get(campaign.id) ?? { source: 0, insight: 0 };
-              const badge = statusClass[campaign.status] ?? statusClass.draft;
+              const badge = statusClass[campaign.status];
               const goalSnippet =
                 campaign.goal != null ? campaign.goal.slice(0, 100) + (campaign.goal.length > 100 ? "…" : "") : null;
               return (
@@ -106,7 +96,7 @@ const statusClass: Record<string, string> = {
                       {goalSnippet && <p class="text-muted-foreground mt-1 text-sm">{goalSnippet}</p>}
                     </div>
                     <span class:list={["shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium", badge]}>
-                      {statusLabel[campaign.status] ?? campaign.status}
+                      {statusLabel[campaign.status]}
                     </span>
                   </div>
                   <div class="text-muted-foreground/60 mt-4 flex items-center gap-4 text-xs">

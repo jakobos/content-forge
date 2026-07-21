@@ -80,8 +80,8 @@ export default function RegenerateForm({ campaignId, generationNumber, ideaId, l
 
   if (state === "generating") {
     return (
-      <div className="flex items-center gap-3 text-sm text-blue-100/70">
-        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-purple-400 border-t-transparent" />
+      <div className="text-muted-foreground flex items-center gap-3 text-sm">
+        <span className="border-primary inline-block h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
         <span>{PHASE_LABELS[phase] ?? "Processing..."}</span>
       </div>
     );
@@ -90,10 +90,10 @@ export default function RegenerateForm({ campaignId, generationNumber, ideaId, l
   if (state === "error") {
     return (
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-sm text-red-300">{errorMessage}</p>
+        <p className="text-destructive text-sm">{errorMessage}</p>
         <button
           onClick={handleTryAgain}
-          className="rounded-lg bg-purple-600/20 px-3 py-1.5 text-sm font-medium text-purple-300 transition-colors hover:bg-purple-600/30"
+          className="bg-primary/20 text-primary hover:bg-primary/30 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
         >
           Try Again
         </button>
@@ -113,16 +113,16 @@ export default function RegenerateForm({ campaignId, generationNumber, ideaId, l
           }}
           placeholder="Optional: describe how to improve... (e.g. 'shorter hooks', 'focus on data points')"
           rows={2}
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-blue-100/30 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+          className="border-input bg-input text-foreground placeholder:text-muted-foreground/50 focus:ring-ring w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 focus:outline-none"
         />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-blue-100/40">
+          <span className="text-muted-foreground/50 text-xs">
             {charCount}/{MAX_HINT_LENGTH}
           </span>
           <div className="flex gap-2">
             <button
               onClick={handleCancel}
-              className="rounded-lg bg-white/5 px-3 py-1.5 text-sm font-medium text-blue-100/60 transition-colors hover:bg-white/10"
+              className="bg-card/50 text-muted-foreground hover:bg-card/70 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -130,7 +130,7 @@ export default function RegenerateForm({ campaignId, generationNumber, ideaId, l
               onClick={() => {
                 void handleRegenerate();
               }}
-              className="rounded-lg bg-purple-600/30 px-4 py-1.5 text-sm font-medium text-purple-200 transition-colors hover:bg-purple-600/50"
+              className="bg-primary/30 text-primary-foreground hover:bg-primary/50 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors"
             >
               Regenerate
             </button>
@@ -145,7 +145,7 @@ export default function RegenerateForm({ campaignId, generationNumber, ideaId, l
       onClick={() => {
         setState("editing");
       }}
-      className="rounded-lg bg-purple-600/20 px-3 py-1.5 text-sm font-medium text-purple-300 transition-colors hover:bg-purple-600/30"
+      className="bg-primary/20 text-primary hover:bg-primary/30 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
     >
       {label}
     </button>

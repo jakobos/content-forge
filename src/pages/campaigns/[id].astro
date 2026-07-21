@@ -1,6 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
+import { CAMPAIGN_STATUS_CLASS, CAMPAIGN_STATUS_LABEL } from "@/lib/campaigns/lifecycle";
 import AddSourceDocumentForm from "@/components/campaigns/AddSourceDocumentForm";
 import AddInsightForm from "@/components/campaigns/AddInsightForm";
 import GenerateIdeasPanel from "@/components/campaigns/GenerateIdeasPanel";
@@ -103,21 +104,10 @@ const hasDocuments = sourceDocs.length > 0 || insights.length > 0;
 const error = Astro.url.searchParams.get("error");
 const success = Astro.url.searchParams.get("success");
 
-const statusLabel: Record<string, string> = {
-  draft: "Draft",
-  active: "Active",
-  completed: "Completed",
-  archived: "Archived",
-};
+const statusLabel = CAMPAIGN_STATUS_LABEL;
+const statusClass = CAMPAIGN_STATUS_CLASS;
 
-const statusClass: Record<string, string> = {
-  draft: "bg-muted/50 text-muted-foreground border-muted-foreground/40",
-  active: "bg-accent/20 text-accent border-accent/40",
-  completed: "bg-primary/20 text-primary border-primary/40",
-  archived: "bg-muted/30 text-muted-foreground/60 border-muted-foreground/30",
-};
-
-const badge = statusClass[campaign.status] ?? statusClass.draft;
+const badge = statusClass[campaign.status];
 ---
 
 <Layout title={campaign.title}>
@@ -137,7 +127,7 @@ const badge = statusClass[campaign.status] ?? statusClass.draft;
             {campaign.description && <p class="text-muted-foreground/70 mt-3 text-sm">{campaign.description}</p>}
           </div>
           <span class:list={["shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-medium", badge]}>
-            {statusLabel[campaign.status] ?? campaign.status}
+            {statusLabel[campaign.status]}
           </span>
         </div>
 

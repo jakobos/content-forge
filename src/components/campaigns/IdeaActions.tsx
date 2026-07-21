@@ -92,7 +92,7 @@ export default function IdeaActions({ ideaId, initialStatus, idea, refs }: Props
             void handleTransition(e, target);
           }}
           disabled={inFlight}
-          className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-xs text-blue-100/70 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+          className="border-border bg-card/50 text-muted-foreground hover:bg-card/70 rounded-md border px-2 py-0.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         >
           {IDEA_STATUS_LABEL[target]}
         </button>
@@ -105,7 +105,7 @@ export default function IdeaActions({ ideaId, initialStatus, idea, refs }: Props
             void handleCopy(e);
           }}
           disabled={inFlight || uiState === "copying"}
-          className="rounded-md border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-xs text-purple-300 transition-colors hover:bg-purple-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+          className="border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 rounded-md border px-2 py-0.5 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
         >
           {uiState === "copied" ? "Copied!" : uiState === "copying" ? "Copying..." : "Copy"}
         </button>
@@ -117,7 +117,7 @@ export default function IdeaActions({ ideaId, initialStatus, idea, refs }: Props
           onClick={(e) => {
             e.stopPropagation();
           }}
-          className="text-xs text-red-400"
+          className="text-destructive text-xs"
         >
           {errorMsg}
         </span>

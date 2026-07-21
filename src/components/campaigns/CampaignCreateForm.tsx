@@ -13,11 +13,11 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500 disabled:opacity-60"
+      className="bg-primary text-primary-foreground hover:bg-primary/90 w-full rounded-lg px-4 py-2 font-medium transition-colors disabled:opacity-60"
     >
       {pending ? (
         <span className="flex items-center justify-center gap-2">
-          <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          <span className="border-primary-foreground/30 border-t-primary-foreground size-4 animate-spin rounded-full border-2" />
           Creating…
         </span>
       ) : (
@@ -28,12 +28,12 @@ function SubmitButton() {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-colors";
+  "w-full rounded-lg border border-input bg-input px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring transition-colors";
 
 const inputErrorClass =
-  "w-full rounded-lg border border-red-400/60 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors";
+  "w-full rounded-lg border border-destructive/60 bg-input px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-destructive transition-colors";
 
-const labelClass = "mb-1 block text-sm text-blue-100/80";
+const labelClass = "mb-1 block text-sm text-muted-foreground";
 
 export default function CampaignCreateForm({ serverError }: Props) {
   const [title, setTitle] = useState("");
@@ -60,7 +60,7 @@ export default function CampaignCreateForm({ serverError }: Props) {
     <form method="POST" action="/api/campaigns" className="space-y-5" onSubmit={handleSubmit} noValidate>
       <div>
         <label htmlFor="title" className={labelClass}>
-          Title <span className="text-red-400">*</span>
+          Title <span className="text-destructive">*</span>
         </label>
         <input
           id="title"
@@ -77,7 +77,7 @@ export default function CampaignCreateForm({ serverError }: Props) {
           autoFocus
         />
         {titleError && (
-          <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
+          <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
             <CircleAlert className="size-3" />
             {titleError}
           </p>
@@ -86,7 +86,7 @@ export default function CampaignCreateForm({ serverError }: Props) {
 
       <div>
         <label htmlFor="goal" className={labelClass}>
-          Goal <span className="text-blue-100/40">(optional)</span>
+          Goal <span className="text-muted-foreground/50">(optional)</span>
         </label>
         <input
           id="goal"
@@ -103,7 +103,7 @@ export default function CampaignCreateForm({ serverError }: Props) {
 
       <div>
         <label htmlFor="description" className={labelClass}>
-          Description <span className="text-blue-100/40">(optional)</span>
+          Description <span className="text-muted-foreground/50">(optional)</span>
         </label>
         <textarea
           id="description"

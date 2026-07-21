@@ -114,8 +114,8 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
 
   if (state === "generating") {
     return (
-      <div className="flex items-center gap-3 text-sm text-blue-100/70">
-        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-purple-400 border-t-transparent" />
+      <div className="text-muted-foreground flex items-center gap-3 text-sm">
+        <span className="border-primary inline-block h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
         <span>{PHASE_LABELS[phase] ?? "Processing..."}</span>
       </div>
     );
@@ -124,10 +124,10 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
   if (state === "error") {
     return (
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-sm text-red-300">{errorMessage}</p>
+        <p className="text-destructive text-sm">{errorMessage}</p>
         <button
           onClick={handleReset}
-          className="rounded-lg bg-purple-600/20 px-3 py-1.5 text-sm font-medium text-purple-300 transition-colors hover:bg-purple-600/30"
+          className="bg-primary/20 text-primary hover:bg-primary/30 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
         >
           Try Again
         </button>
@@ -148,10 +148,10 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
           }}
           placeholder="Describe your idea in your own words… (min 20 characters)"
           rows={4}
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white placeholder-blue-100/30 focus:ring-1 focus:ring-purple-500 focus:outline-none"
+          className="border-input bg-input text-foreground placeholder:text-muted-foreground/50 focus:ring-ring w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 focus:outline-none"
         />
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs text-blue-100/40">
+          <span className="text-muted-foreground/50 text-xs">
             {charCount}/{MAX_DESCRIPTION_LENGTH}
           </span>
           <div className="flex gap-2">
@@ -159,7 +159,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
               onClick={() => {
                 setState("idle");
               }}
-              className="rounded-lg bg-white/5 px-3 py-1.5 text-sm font-medium text-blue-100/60 transition-colors hover:bg-white/10"
+              className="bg-card/50 text-muted-foreground hover:bg-card/70 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -169,7 +169,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
               }}
               disabled={!isSubmittable}
               title={!isSubmittable ? `Minimum ${MIN_DESCRIPTION_LENGTH} characters required` : undefined}
-              className="rounded-lg bg-purple-600/30 px-4 py-1.5 text-sm font-medium text-purple-200 transition-colors hover:bg-purple-600/50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="bg-primary/30 text-primary-foreground hover:bg-primary/50 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               Structure Idea
             </button>
@@ -181,7 +181,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <label htmlFor="batch-size" className="text-sm text-blue-100/70">
+      <label htmlFor="batch-size" className="text-muted-foreground text-sm">
         Ideas:
       </label>
       <select
@@ -190,7 +190,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
         onChange={(e) => {
           setBatchSize(Number(e.target.value));
         }}
-        className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-sm text-white focus:ring-1 focus:ring-purple-500 focus:outline-none"
+        className="border-input bg-input text-foreground focus:ring-ring rounded-lg border px-2 py-1 text-sm focus:ring-1 focus:outline-none"
       >
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
           <option key={n} value={n}>
@@ -204,7 +204,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
         }}
         disabled={!hasDocuments}
         title={!hasDocuments ? "Add documents first" : undefined}
-        className="rounded-lg bg-purple-600/30 px-4 py-1.5 text-sm font-medium text-purple-200 transition-colors hover:bg-purple-600/50 disabled:cursor-not-allowed disabled:opacity-40"
+        className="bg-primary/30 text-primary-foreground hover:bg-primary/50 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
       >
         {hasDocuments ? "Generate Ideas" : "Add documents first"}
       </button>
@@ -214,7 +214,7 @@ export default function GenerateIdeasPanel({ campaignId, hasDocuments }: Props) 
         }}
         disabled={!hasDocuments}
         title={!hasDocuments ? "Add documents first" : undefined}
-        className="rounded-lg bg-purple-600/30 px-4 py-1.5 text-sm font-medium text-purple-200 transition-colors hover:bg-purple-600/50 disabled:cursor-not-allowed disabled:opacity-40"
+        className="bg-primary/30 text-primary-foreground hover:bg-primary/50 rounded-lg px-4 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40"
       >
         Describe your own idea
       </button>

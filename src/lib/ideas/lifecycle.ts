@@ -36,9 +36,9 @@ export const IDEA_STATUS_LABEL: Record<IdeaStatus, string> = {
  * Mirrors the campaign statusClass record-map pattern in [id].astro.
  */
 export const IDEA_STATUS_CLASS: Record<IdeaStatus, string> = {
-  draft: "bg-slate-500/30 text-slate-300 border-slate-500/40",
-  accepted: "bg-green-500/20 text-green-300 border-green-500/40",
-  published: "bg-purple-500/20 text-purple-300 border-purple-500/40",
-  archived: "bg-gray-500/20 text-gray-400 border-gray-500/40",
-  declined: "bg-red-500/20 text-red-300 border-red-500/40",
+  draft: "bg-muted/50 text-muted-foreground border-muted-foreground/40",
+  accepted: "bg-accent/20 text-accent border-accent/40",
+  published: "bg-primary/20 text-primary border-primary/40",
+  archived: "bg-muted/30 text-muted-foreground/60 border-muted-foreground/30",
+  declined: "bg-destructive/20 text-destructive border-destructive/40",
 };

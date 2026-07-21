@@ -16,11 +16,11 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 disabled:opacity-60"
+      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60"
     >
       {pending ? (
         <span className="flex items-center gap-2">
-          <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          <span className="border-primary-foreground/30 border-t-primary-foreground size-4 animate-spin rounded-full border-2" />
           Adding…
         </span>
       ) : (
@@ -31,10 +31,10 @@ function SubmitButton() {
 }
 
 const inputClass =
-  "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-400 transition-colors text-sm";
+  "w-full rounded-lg border border-input bg-input px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-ring transition-colors text-sm";
 const inputErrorClass =
-  "w-full rounded-lg border border-red-400/60 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-400 transition-colors text-sm";
-const labelClass = "mb-1 block text-sm text-blue-100/80";
+  "w-full rounded-lg border border-destructive/60 bg-input px-3 py-2 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-destructive transition-colors text-sm";
+const labelClass = "mb-1 block text-sm text-muted-foreground";
 
 export default function AddInsightForm({ campaignId, serverError }: Props) {
   const [title, setTitle] = useState("");
@@ -69,7 +69,7 @@ export default function AddInsightForm({ campaignId, serverError }: Props) {
 
       <div>
         <label htmlFor="insight-title" className={labelClass}>
-          Title <span className="text-red-400">*</span>
+          Title <span className="text-destructive">*</span>
         </label>
         <input
           id="insight-title"
@@ -84,7 +84,7 @@ export default function AddInsightForm({ campaignId, serverError }: Props) {
           className={errors.title ? inputErrorClass : inputClass}
         />
         {errors.title && (
-          <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
+          <p className="text-destructive mt-1 flex items-center gap-1 text-xs">
             <CircleAlert className="size-3" />
             {errors.title}
           </p>
@@ -93,7 +93,7 @@ export default function AddInsightForm({ campaignId, serverError }: Props) {
 
       <div>
         <label htmlFor="insight-content" className={labelClass}>
-          Content <span className="text-red-400">*</span>
+          Content <span className="text-destructive">*</span>
         </label>
         <textarea
           id="insight-content"
@@ -110,14 +110,14 @@ export default function AddInsightForm({ campaignId, serverError }: Props) {
         />
         <div className="mt-1 flex items-center justify-between">
           {errors.content ? (
-            <p className="flex items-center gap-1 text-xs text-red-300">
+            <p className="text-destructive flex items-center gap-1 text-xs">
               <CircleAlert className="size-3" />
               {errors.content}
             </p>
           ) : (
             <span />
           )}
-          <span className={`text-xs ${overLimit ? "text-red-300" : "text-blue-100/40"}`}>
+          <span className={`text-xs ${overLimit ? "text-destructive" : "text-muted-foreground/50"}`}>
             {content.length.toLocaleString()} / {MAX_CONTENT.toLocaleString()}
           </span>
         </div>

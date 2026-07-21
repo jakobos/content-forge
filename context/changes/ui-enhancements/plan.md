@@ -414,9 +414,9 @@ No performance impact expected. The change is purely cosmetic -- CSS variable va
 
 #### Automated
 
-- [x] 2.1 Astro types generate cleanly after page migrations
-- [x] 2.2 Lint passes after page migrations
-- [x] 2.3 Build succeeds after page migrations
+- [x] 2.1 Astro types generate cleanly after page migrations — 8427d48
+- [x] 2.2 Lint passes after page migrations — 8427d48
+- [x] 2.3 Build succeeds after page migrations — 8427d48
 
 #### Manual
 
@@ -429,9 +429,9 @@ No performance impact expected. The change is purely cosmetic -- CSS variable va
 
 #### Automated
 
-- [ ] 3.1 Astro types generate cleanly after component migrations
-- [ ] 3.2 Lint passes after component migrations
-- [ ] 3.3 Build succeeds after component migrations
+- [x] 3.1 Astro types generate cleanly after component migrations
+- [x] 3.2 Lint passes after component migrations
+- [x] 3.3 Build succeeds after component migrations
 
 #### Manual
 
