@@ -401,9 +401,9 @@ No performance impact expected. The change is purely cosmetic -- CSS variable va
 
 #### Automated
 
-- [x] 1.1 Astro types generate cleanly after CSS variable changes
-- [x] 1.2 Lint passes after CSS variable changes
-- [x] 1.3 Build succeeds after CSS variable changes
+- [x] 1.1 Astro types generate cleanly after CSS variable changes — 78ec8ef
+- [x] 1.2 Lint passes after CSS variable changes — 78ec8ef
+- [x] 1.3 Build succeeds after CSS variable changes — 78ec8ef
 
 #### Manual
 
@@ -414,9 +414,9 @@ No performance impact expected. The change is purely cosmetic -- CSS variable va
 
 #### Automated
 
-- [ ] 2.1 Astro types generate cleanly after page migrations
-- [ ] 2.2 Lint passes after page migrations
-- [ ] 2.3 Build succeeds after page migrations
+- [x] 2.1 Astro types generate cleanly after page migrations
+- [x] 2.2 Lint passes after page migrations
+- [x] 2.3 Build succeeds after page migrations
 
 #### Manual
 
