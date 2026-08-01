@@ -97,42 +97,59 @@ async function autoIncrementGenerationNumber(supabase: SupabaseClient<Database>,
  */
 function stripAndParse(text: string): unknown {
   const stripped = text
+    .trim()
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/i, "")
     .trim();
   return JSON.parse(stripped) as unknown;
 }
 
+type ParseResult<T> = { success: true; data: T } | { success: false; reason: string };
+
 /**
  * Parse JSON from the LLM text output and validate against IdeaOutputSchema.
- * Returns null on any parse or validation failure.
+ * Returns a discriminated result with diagnostic info on failure.
  */
-function parseAndValidate(text: string) {
+function parseAndValidate(text: string): ParseResult<ReturnType<typeof IdeaOutputSchema.parse>> {
   let parsed: unknown;
   try {
     parsed = stripAndParse(text);
-  } catch {
-    return null;
+  } catch (err) {
+    const preview = text.slice(0, 200);
+    return {
+      success: false,
+      reason: `JSON parse failed: ${err instanceof Error ? err.message : String(err)} | raw start: ${preview}`,
+    };
   }
 
   const result = IdeaOutputSchema.safeParse(parsed);
-  return result.success ? result.data : null;
+  if (result.success) return { success: true, data: result.data };
+
+  const issues = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+  return { success: false, reason: `Zod validation failed: ${issues}` };
 }
 
 /**
  * Parse JSON from the LLM text output and validate against ManualIdeaOutputSchema.
- * Returns null on any parse or validation failure.
+ * Returns a discriminated result with diagnostic info on failure.
  */
-function parseAndValidateManual(text: string) {
+function parseAndValidateManual(text: string): ParseResult<ReturnType<typeof ManualIdeaOutputSchema.parse>> {
   let parsed: unknown;
   try {
     parsed = stripAndParse(text);
-  } catch {
-    return null;
+  } catch (err) {
+    const preview = text.slice(0, 200);
+    return {
+      success: false,
+      reason: `JSON parse failed: ${err instanceof Error ? err.message : String(err)} | raw start: ${preview}`,
+    };
   }
 
   const result = ManualIdeaOutputSchema.safeParse(parsed);
-  return result.success ? result.data : null;
+  if (result.success) return { success: true, data: result.data };
+
+  const issues = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+  return { success: false, reason: `Zod validation failed: ${issues}` };
 }
 
 /**
@@ -377,16 +394,21 @@ export function createGenerationService(deps: GenerationServiceDeps) {
       }
 
       // ── Step 7: Validate output (retry once on failure) ──────────────────────
-      let parsed = parseAndValidate(rawText);
-      if (!parsed) {
+      let result = parseAndValidate(rawText);
+      if (!result.success) {
+        const firstReason = result.reason;
         try {
           rawText = await callLLM(provider, systemPrompt, userPrompt, model);
         } catch (err) {
-          throw new Error(`LLM retry failed: ${err instanceof Error ? err.message : String(err)}`);
+          throw new Error(
+            `LLM retry failed (first attempt: ${firstReason}): ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
-        parsed = parseAndValidate(rawText);
-        if (!parsed) {
-          throw new Error("LLM output failed schema validation after retry");
+        result = parseAndValidate(rawText);
+        if (!result.success) {
+          throw new Error(
+            `LLM output failed schema validation after retry. Attempt 1: ${firstReason} | Attempt 2: ${result.reason}`,
+          );
         }
       }
 
@@ -394,7 +416,7 @@ export function createGenerationService(deps: GenerationServiceDeps) {
       yield { type: "saving" };
 
       const generationNumber = await autoIncrementGenerationNumber(supabase, campaignId);
-      const ideaIds = await persistIdeas(supabase, campaignId, userId, generationNumber, parsed.ideas, tagMap);
+      const ideaIds = await persistIdeas(supabase, campaignId, userId, generationNumber, result.data.ideas, tagMap);
 
       // ── Step 9: Done ─────────────────────────────────────────────────────────
       yield { type: "done", ideaIds };
@@ -472,16 +494,21 @@ export function createStructuringService(deps: GenerationServiceDeps) {
       }
 
       // ── Step 7: Validate output (retry once on failure) ──────────────────────
-      let parsed = parseAndValidateManual(rawText);
-      if (!parsed) {
+      let manualResult = parseAndValidateManual(rawText);
+      if (!manualResult.success) {
+        const firstReason = manualResult.reason;
         try {
           rawText = await callLLM(provider, systemPrompt, userPrompt, model, ManualIdeaOutputJsonSchema);
         } catch (err) {
-          throw new Error(`LLM retry failed: ${err instanceof Error ? err.message : String(err)}`);
+          throw new Error(
+            `LLM retry failed (first attempt: ${firstReason}): ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
-        parsed = parseAndValidateManual(rawText);
-        if (!parsed) {
-          throw new Error("LLM output failed schema validation after retry");
+        manualResult = parseAndValidateManual(rawText);
+        if (!manualResult.success) {
+          throw new Error(
+            `LLM output failed schema validation after retry. Attempt 1: ${firstReason} | Attempt 2: ${manualResult.reason}`,
+          );
         }
       }
 
@@ -494,7 +521,7 @@ export function createStructuringService(deps: GenerationServiceDeps) {
         campaignId,
         userId,
         generationNumber,
-        parsed.idea,
+        manualResult.data.idea,
         tagMap,
         params.description,
       );
@@ -667,16 +694,21 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
       }
 
       // ── Step 7: Validate output (retry once on failure) ──────────────────────
-      let parsed = parseAndValidate(rawText);
-      if (!parsed) {
+      let regenResult = parseAndValidate(rawText);
+      if (!regenResult.success) {
+        const firstReason = regenResult.reason;
         try {
           rawText = await callLLM(provider, systemPrompt, userPrompt, model);
         } catch (err) {
-          throw new Error(`LLM retry failed: ${err instanceof Error ? err.message : String(err)}`);
+          throw new Error(
+            `LLM retry failed (first attempt: ${firstReason}): ${err instanceof Error ? err.message : String(err)}`,
+          );
         }
-        parsed = parseAndValidate(rawText);
-        if (!parsed) {
-          throw new Error("LLM output failed schema validation after retry");
+        regenResult = parseAndValidate(rawText);
+        if (!regenResult.success) {
+          throw new Error(
+            `LLM output failed schema validation after retry. Attempt 1: ${firstReason} | Attempt 2: ${regenResult.reason}`,
+          );
         }
       }
 
@@ -689,7 +721,7 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
         campaignId,
         userId,
         generationNumber,
-        parsed.ideas,
+        regenResult.data.ideas,
         tagMap,
         params.hint,
       );
