@@ -14,8 +14,11 @@
       "git branch *": "allow",
       "git checkout *": "allow",
       "git stash *": "allow",
-      "ls": "allow",
-      "mkdir": "allow",
+      "git -C *": "allow",
+      "echo *": "allow",
+      "ls *": "allow",
+      "mkdir *": "allow",
+      "date *": "allow",
       "curl *": "ask",
       "wget *": "ask",
       "git push": "ask",
@@ -33,7 +36,7 @@
     "linear-mcp-server": {
       "type": "local",
       "command": ["npx", "-y", "mcp-remote", "https://mcp.linear.app/mcp"],
-      "enabled": true
+      "enabled": false
     }
   }
 }
