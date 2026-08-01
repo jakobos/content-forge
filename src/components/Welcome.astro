@@ -3,49 +3,45 @@
 ---
 
 <div class="relative w-full overflow-hidden">
-  <!-- Cosmic orbs -->
+  <!-- Ocean Breeze orbs -->
   <div
-    class="pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full bg-purple-500/20 blur-[120px]"
+    class="bg-primary/20 pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full blur-[120px]"
   >
   </div>
   <div
-    class="pointer-events-none absolute top-2/3 -right-16 h-[250px] w-[250px] rounded-full bg-blue-500/15 blur-[100px]"
+    class="bg-accent/15 pointer-events-none absolute top-2/3 -right-16 h-[250px] w-[250px] rounded-full blur-[100px]"
   >
   </div>
   <div
-    class="pointer-events-none absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-indigo-400/10 blur-[140px]"
+    class="bg-secondary/10 pointer-events-none absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full blur-[140px]"
   >
   </div>
 
   <!-- Star field -->
   <div
     class="pointer-events-none absolute inset-0"
-    style="background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 200px, 150px 150px, 100px 100px; background-position: 0 0, 40px 60px, 80px 30px;"
+    style="background-image: radial-gradient(circle, rgba(255,255,255,0.10) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px); background-size: 200px 200px, 150px 150px, 100px 100px; background-position: 0 0, 40px 60px, 80px 30px;"
   >
   </div>
 
   <div class="relative z-10 p-4 sm:p-8">
     <!-- Hero section -->
     <div class="mx-auto flex max-w-4xl flex-col items-center justify-center px-4 py-24 text-center sm:py-32 lg:py-40">
-      <h1
-        class="mb-6 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-5xl leading-tight font-bold text-transparent sm:text-6xl lg:text-7xl"
-      >
-        ContentForge
-      </h1>
-      <p class="mb-10 max-w-2xl text-lg text-blue-100/70 sm:text-xl">
+      <h1 class="text-gradient mb-6 text-5xl leading-tight font-bold sm:text-6xl lg:text-7xl">ContentForge</h1>
+      <p class="text-muted-foreground mb-10 max-w-2xl text-lg sm:text-xl">
         Turn raw notes, reports, and scattered thoughts into structured, on-brand social media post ideas — in minutes,
         not hours.
       </p>
       <div class="flex flex-col gap-4 sm:flex-row">
         <a
           href="/auth/signin"
-          class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500"
+          class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-medium transition-colors"
         >
           Sign In
         </a>
         <a
           href="/auth/signup"
-          class="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-white/10"
+          class="border-border text-foreground hover:bg-card/50 inline-flex items-center justify-center rounded-lg border px-6 py-3 text-base font-medium transition-colors"
         >
           Sign Up
         </a>
@@ -54,7 +50,7 @@
 
     <!-- Feature cards -->
     <div class="mx-auto grid max-w-4xl grid-cols-1 gap-6 px-4 pb-24 sm:grid-cols-3">
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <div class="glass-card p-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -65,19 +61,19 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="mb-4 text-purple-300"
+          class="text-primary mb-4"
         >
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Brand-Aware Generation</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
+        <h3 class="text-foreground mb-2 text-lg font-semibold">Brand-Aware Generation</h3>
+        <p class="text-muted-foreground text-sm leading-relaxed">
           Your business profile persists across sessions — tone, audience, and keywords stay consistent without
           re-explaining every time.
         </p>
       </div>
 
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <div class="glass-card p-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -88,21 +84,21 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="mb-4 text-purple-300"
+          class="text-primary mb-4"
         >
           <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
           <polyline points="14 2 14 8 20 8"></polyline>
           <line x1="16" y1="13" x2="8" y2="13"></line>
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Campaign-Driven Ideas</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
+        <h3 class="text-foreground mb-2 text-lg font-semibold">Campaign-Driven Ideas</h3>
+        <p class="text-muted-foreground text-sm leading-relaxed">
           Upload raw documents, define a campaign, and get structured post skeletons — hooks, key points, and flow —
           ready to publish.
         </p>
       </div>
 
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+      <div class="glass-card p-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -113,13 +109,13 @@
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="mb-4 text-purple-300"
+          class="text-primary mb-4"
         >
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
         </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Source-Grounded</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
+        <h3 class="text-foreground mb-2 text-lg font-semibold">Source-Grounded</h3>
+        <p class="text-muted-foreground text-sm leading-relaxed">
           Every generated idea traces back to your uploaded material — no hallucinated sources, no generic filler.
         </p>
       </div>
