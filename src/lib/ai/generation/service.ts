@@ -20,6 +20,8 @@ const DEFAULT_MODEL = "anthropic/claude-sonnet-4.6";
 const GENERATION_TEMPERATURE = 0.8;
 const GENERATION_MAX_TOKENS = 8192;
 
+const LOG_PREFIX = "[gen-svc]";
+
 export type GenerationProgressPhase = "retrieving" | "generating" | "saving" | "done" | "error";
 
 export interface GenerationProgressEvent {
@@ -115,18 +117,28 @@ function parseAndValidate(text: string): ParseResult<ReturnType<typeof IdeaOutpu
   try {
     parsed = stripAndParse(text);
   } catch (err) {
-    const preview = text.slice(0, 200);
-    return {
-      success: false,
-      reason: `JSON parse failed: ${err instanceof Error ? err.message : String(err)} | raw start: ${preview}`,
-    };
+    const preview = text.slice(0, 500);
+    const reason = `JSON parse failed: ${err instanceof Error ? err.message : String(err)} | raw start: ${preview}`;
+    console.info(LOG_PREFIX, "parseAndValidate failed", { stage: "json_parse", reason, rawLength: text.length });
+    return { success: false, reason };
   }
 
   const result = IdeaOutputSchema.safeParse(parsed);
-  if (result.success) return { success: true, data: result.data };
+  if (result.success) {
+    console.info(LOG_PREFIX, "parseAndValidate success", { ideaCount: result.data.ideas.length });
+    return { success: true, data: result.data };
+  }
 
   const issues = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-  return { success: false, reason: `Zod validation failed: ${issues}` };
+  const reason = `Zod validation failed: ${issues}`;
+  console.info(LOG_PREFIX, "parseAndValidate failed", {
+    stage: "zod_validation",
+    reason,
+    issueCount: result.error.issues.length,
+    issues: result.error.issues.map((i) => ({ path: i.path.join("."), code: i.code, message: i.message })),
+    parsedKeys: typeof parsed === "object" && parsed !== null ? Object.keys(parsed) : "not_object",
+  });
+  return { success: false, reason };
 }
 
 /**
@@ -138,18 +150,28 @@ function parseAndValidateManual(text: string): ParseResult<ReturnType<typeof Man
   try {
     parsed = stripAndParse(text);
   } catch (err) {
-    const preview = text.slice(0, 200);
-    return {
-      success: false,
-      reason: `JSON parse failed: ${err instanceof Error ? err.message : String(err)} | raw start: ${preview}`,
-    };
+    const preview = text.slice(0, 500);
+    const reason = `JSON parse failed: ${err instanceof Error ? err.message : String(err)} | raw start: ${preview}`;
+    console.info(LOG_PREFIX, "parseAndValidateManual failed", { stage: "json_parse", reason, rawLength: text.length });
+    return { success: false, reason };
   }
 
   const result = ManualIdeaOutputSchema.safeParse(parsed);
-  if (result.success) return { success: true, data: result.data };
+  if (result.success) {
+    console.info(LOG_PREFIX, "parseAndValidateManual success", { title: result.data.idea.working_title });
+    return { success: true, data: result.data };
+  }
 
   const issues = result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-  return { success: false, reason: `Zod validation failed: ${issues}` };
+  const reason = `Zod validation failed: ${issues}`;
+  console.info(LOG_PREFIX, "parseAndValidateManual failed", {
+    stage: "zod_validation",
+    reason,
+    issueCount: result.error.issues.length,
+    issues: result.error.issues.map((i) => ({ path: i.path.join("."), code: i.code, message: i.message })),
+    parsedKeys: typeof parsed === "object" && parsed !== null ? Object.keys(parsed) : "not_object",
+  });
+  return { success: false, reason };
 }
 
 /**
@@ -163,6 +185,17 @@ async function callLLM(
   model: string,
   jsonSchema: Record<string, unknown> = IdeaOutputJsonSchema,
 ): Promise<string> {
+  console.info(LOG_PREFIX, "callLLM request", {
+    model,
+    temperature: GENERATION_TEMPERATURE,
+    maxTokens: GENERATION_MAX_TOKENS,
+    systemPromptLength: systemPrompt.length,
+    userPromptLength: userPrompt.length,
+    jsonSchemaKeys: Object.keys(jsonSchema),
+    responseFormatType: "json_schema",
+    strict: true,
+  });
+
   const response = await provider.generate({
     model,
     instructions: systemPrompt,
@@ -179,10 +212,29 @@ async function callLLM(
     },
   });
 
+  console.info(LOG_PREFIX, "callLLM response", {
+    id: response.id,
+    model: response.model,
+    finishReason: response.finishReason,
+    usage: response.usage,
+    outputItemTypes: response.output.map((o) => o.type),
+    outputItemCount: response.output.length,
+  });
+
   const textItem = response.output.find((o) => o.type === "text");
   if (!textItem) {
+    console.info(LOG_PREFIX, "callLLM no text output", {
+      outputItems: response.output.map((o) => ({ type: o.type })),
+    });
     throw new Error("LLM returned no text output");
   }
+
+  console.info(LOG_PREFIX, "callLLM raw text", {
+    textLength: textItem.text.length,
+    textStart: textItem.text.slice(0, 300),
+    textEnd: textItem.text.slice(-200),
+  });
+
   return textItem.text;
 }
 
@@ -199,6 +251,15 @@ export async function persistIdeas(
   tagMap: Map<string, string>,
   improvementHint?: string,
 ): Promise<string[]> {
+  console.info(LOG_PREFIX, "persistIdeas:start", {
+    campaignId,
+    generationNumber,
+    ideaCount: ideas.length,
+    tagMapSize: tagMap.size,
+    tagMapKeys: [...tagMap.keys()],
+    hasImprovementHint: !!improvementHint,
+  });
+
   const ideaIds: string[] = [];
 
   for (const idea of ideas) {
@@ -214,8 +275,19 @@ export async function persistIdeas(
       .filter((r): r is NonNullable<typeof r> => r !== null);
 
     if (resolvedRefs.length === 0) {
+      console.info(LOG_PREFIX, "persistIdeas:skipped (all tags unmatched)", {
+        title: idea.working_title,
+        requestedTags: idea.source_references.map((r) => r.tag),
+      });
       continue; // All tags hallucinated — do not persist this idea
     }
+
+    console.info(LOG_PREFIX, "persistIdeas:inserting", {
+      title: idea.working_title,
+      resolvedRefCount: resolvedRefs.length,
+      totalRefCount: idea.source_references.length,
+      unmatchedTags: idea.source_references.filter((r) => !tagMap.has(r.tag)).map((r) => r.tag),
+    });
 
     const { data: insertedIdea, error: ideaError } = await supabase
       .from("ideas")
@@ -331,6 +403,14 @@ export function createGenerationService(deps: GenerationServiceDeps) {
   }): AsyncGenerator<GenerationProgressEvent> {
     const model = params.model ?? DEFAULT_MODEL;
 
+    console.info(LOG_PREFIX, "generation:start", {
+      campaignId,
+      userId,
+      batchSize: params.batchSize,
+      model,
+      bgOpId: params.bgOpId,
+    });
+
     try {
       // ── Step 1: Fetch campaign meta + documents ──────────────────────────────
       yield { type: "retrieving" };
@@ -340,12 +420,24 @@ export function createGenerationService(deps: GenerationServiceDeps) {
         fetchCampaignDocuments(supabase, campaignId),
       ]);
 
+      console.info(LOG_PREFIX, "generation:step1 campaign+docs fetched", {
+        campaignTitle: campaign.title,
+        campaignGoal: campaign.goal,
+        documentCount: documents.length,
+        documentTitles: documents.map((d) => d.title),
+      });
+
       // ── Step 2: Derive seed queries ──────────────────────────────────────────
       const seedQueries = deriveSeedQueries({
         campaignTitle: campaign.title,
         campaignGoal: campaign.goal,
         campaignDescription: campaign.description,
         documents,
+      });
+
+      console.info(LOG_PREFIX, "generation:step2 seed queries", {
+        seedQueryCount: seedQueries.length,
+        seedQueries,
       });
 
       // ── Step 3: Retrieve tagged fragments ───────────────────────────────────
@@ -357,8 +449,27 @@ export function createGenerationService(deps: GenerationServiceDeps) {
       // Build tag -> documentVersionId map for persistence
       const tagMap = new Map<string, string>(fragments.map((f) => [f.tag, f.documentVersionId]));
 
+      console.info(LOG_PREFIX, "generation:step3 fragments retrieved", {
+        fragmentCount: fragments.length,
+        tags: fragments.map((f) => f.tag),
+        tagMapSize: tagMap.size,
+        fragmentPreviews: fragments.map((f) => ({
+          tag: f.tag,
+          documentTitle: f.documentTitle,
+          chunkTextLength: f.chunkText.length,
+        })),
+      });
+
       // ── Step 4: Resolve business profile ────────────────────────────────────
       const profile = await resolveBusinessProfile(supabase, userId);
+
+      console.info(LOG_PREFIX, "generation:step4 profile resolved", {
+        toneOfVoice: profile.toneOfVoice,
+        audience: profile.audience,
+        brandGoal: profile.brandGoal,
+        archetype: profile.archetype,
+        keywordCount: profile.keywords.length,
+      });
 
       // Store debug info in background_operations.input_ref
       await supabase
@@ -383,20 +494,34 @@ export function createGenerationService(deps: GenerationServiceDeps) {
         fragments,
       });
 
+      console.info(LOG_PREFIX, "generation:step5 prompts built", {
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+      });
+
       // ── Step 6: Single structured-output LLM call (with one auto-retry) ─────
       yield { type: "generating" };
+
+      console.info(LOG_PREFIX, "generation:step6 calling LLM (attempt 1)");
 
       let rawText: string;
       try {
         rawText = await callLLM(provider, systemPrompt, userPrompt, model);
       } catch (err) {
+        console.info(LOG_PREFIX, "generation:step6 LLM call failed", {
+          error: err instanceof Error ? err.message : String(err),
+        });
         throw new Error(`LLM call failed: ${err instanceof Error ? err.message : String(err)}`);
       }
 
       // ── Step 7: Validate output (retry once on failure) ──────────────────────
+      console.info(LOG_PREFIX, "generation:step7 validating output (attempt 1)");
       let result = parseAndValidate(rawText);
       if (!result.success) {
         const firstReason = result.reason;
+        console.info(LOG_PREFIX, "generation:step7 validation failed, retrying LLM (attempt 2)", {
+          firstReason,
+        });
         try {
           rawText = await callLLM(provider, systemPrompt, userPrompt, model);
         } catch (err) {
@@ -412,16 +537,42 @@ export function createGenerationService(deps: GenerationServiceDeps) {
         }
       }
 
+      console.info(LOG_PREFIX, "generation:step7 validation passed", {
+        ideaCount: result.data.ideas.length,
+        ideaTitles: result.data.ideas.map((i) => i.working_title),
+        ideaRefCounts: result.data.ideas.map((i) => ({
+          title: i.working_title,
+          sourceRefs: i.source_references.length,
+          keyQuotes: i.key_quotes.length,
+          tags: i.source_references.map((r) => r.tag),
+        })),
+      });
+
       // ── Step 8: Persist ideas + fragment references ──────────────────────────
       yield { type: "saving" };
 
       const generationNumber = await autoIncrementGenerationNumber(supabase, campaignId);
+      console.info(LOG_PREFIX, "generation:step8 persisting", {
+        generationNumber,
+        ideaCount: result.data.ideas.length,
+      });
+
       const ideaIds = await persistIdeas(supabase, campaignId, userId, generationNumber, result.data.ideas, tagMap);
 
+      console.info(LOG_PREFIX, "generation:step8 persisted", {
+        ideaIdCount: ideaIds.length,
+        ideaIds,
+      });
+
       // ── Step 9: Done ─────────────────────────────────────────────────────────
+      console.info(LOG_PREFIX, "generation:done", { ideaIds });
       yield { type: "done", ideaIds };
     } catch (err) {
       const message = err instanceof Error ? err.message : "Generation failed";
+      console.info(LOG_PREFIX, "generation:error", {
+        error: message,
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       yield { type: "error", error: message };
     }
   }
@@ -444,11 +595,24 @@ export function createStructuringService(deps: GenerationServiceDeps) {
   }): AsyncGenerator<GenerationProgressEvent> {
     const model = params.model ?? DEFAULT_MODEL;
 
+    console.info(LOG_PREFIX, "structuring:start", {
+      campaignId,
+      userId,
+      descriptionLength: params.description.length,
+      model,
+      bgOpId: params.bgOpId,
+    });
+
     try {
       // ── Step 1: Fetch campaign meta ──────────────────────────────────────────
       yield { type: "retrieving" };
 
       const campaign = await fetchCampaignMeta(supabase, campaignId);
+
+      console.info(LOG_PREFIX, "structuring:step1 campaign fetched", {
+        campaignTitle: campaign.title,
+        campaignGoal: campaign.goal,
+      });
 
       // ── Step 2: Use description as the single seed query ─────────────────────
       const seedQuery = params.description;
@@ -457,8 +621,18 @@ export function createStructuringService(deps: GenerationServiceDeps) {
       const fragments = await retrieveTaggedFragments(searchService, supabase, campaignId, [seedQuery]);
       const tagMap = new Map<string, string>(fragments.map((f) => [f.tag, f.documentVersionId]));
 
+      console.info(LOG_PREFIX, "structuring:step3 fragments retrieved", {
+        fragmentCount: fragments.length,
+        tags: fragments.map((f) => f.tag),
+      });
+
       // ── Step 4: Resolve business profile ────────────────────────────────────
       const profile = await resolveBusinessProfile(supabase, userId);
+
+      console.info(LOG_PREFIX, "structuring:step4 profile resolved", {
+        toneOfVoice: profile.toneOfVoice,
+        archetype: profile.archetype,
+      });
 
       // Store debug info in background_operations.input_ref
       await supabase
@@ -483,20 +657,34 @@ export function createStructuringService(deps: GenerationServiceDeps) {
         fragments,
       });
 
+      console.info(LOG_PREFIX, "structuring:step5 prompts built", {
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+      });
+
       // ── Step 6: Single structured-output LLM call (with one auto-retry) ─────
       yield { type: "generating" };
+
+      console.info(LOG_PREFIX, "structuring:step6 calling LLM (attempt 1)");
 
       let rawText: string;
       try {
         rawText = await callLLM(provider, systemPrompt, userPrompt, model, ManualIdeaOutputJsonSchema);
       } catch (err) {
+        console.info(LOG_PREFIX, "structuring:step6 LLM call failed", {
+          error: err instanceof Error ? err.message : String(err),
+        });
         throw new Error(`LLM call failed: ${err instanceof Error ? err.message : String(err)}`);
       }
 
       // ── Step 7: Validate output (retry once on failure) ──────────────────────
+      console.info(LOG_PREFIX, "structuring:step7 validating output (attempt 1)");
       let manualResult = parseAndValidateManual(rawText);
       if (!manualResult.success) {
         const firstReason = manualResult.reason;
+        console.info(LOG_PREFIX, "structuring:step7 validation failed, retrying LLM (attempt 2)", {
+          firstReason,
+        });
         try {
           rawText = await callLLM(provider, systemPrompt, userPrompt, model, ManualIdeaOutputJsonSchema);
         } catch (err) {
@@ -512,10 +700,17 @@ export function createStructuringService(deps: GenerationServiceDeps) {
         }
       }
 
+      console.info(LOG_PREFIX, "structuring:step7 validation passed", {
+        title: manualResult.data.idea.working_title,
+        refCount: manualResult.data.idea.source_references.length,
+      });
+
       // ── Step 8: Persist manual idea + fragment references ────────────────────
       yield { type: "saving" };
 
       const generationNumber = await autoIncrementGenerationNumber(supabase, campaignId);
+      console.info(LOG_PREFIX, "structuring:step8 persisting", { generationNumber });
+
       const ideaId = await persistManualIdea(
         supabase,
         campaignId,
@@ -526,10 +721,16 @@ export function createStructuringService(deps: GenerationServiceDeps) {
         params.description,
       );
 
+      console.info(LOG_PREFIX, "structuring:done", { ideaId });
+
       // ── Step 9: Done ─────────────────────────────────────────────────────────
       yield { type: "done", ideaIds: [ideaId] };
     } catch (err) {
       const message = err instanceof Error ? err.message : "Structuring failed";
+      console.info(LOG_PREFIX, "structuring:error", {
+        error: message,
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       yield { type: "error", error: message };
     }
   }
@@ -626,6 +827,16 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
   }): AsyncGenerator<GenerationProgressEvent> {
     const model = params.model ?? DEFAULT_MODEL;
 
+    console.info(LOG_PREFIX, "regeneration:start", {
+      campaignId,
+      userId,
+      generationNumber: params.generationNumber,
+      ideaId: params.ideaId ?? null,
+      hint: params.hint ?? null,
+      model,
+      bgOpId: params.bgOpId,
+    });
+
     try {
       // ── Step 1: Fetch campaign meta + source ideas ──────────────────────────
       yield { type: "retrieving" };
@@ -634,6 +845,12 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
         fetchCampaignMeta(supabase, campaignId),
         fetchSourceIdeasForRegeneration(supabase, campaignId, params.generationNumber, params.ideaId),
       ]);
+
+      console.info(LOG_PREFIX, "regeneration:step1 campaign+source ideas fetched", {
+        campaignTitle: campaign.title,
+        sourceIdeaCount: sourceIdeas.length,
+        sourceIdeaTitles: sourceIdeas.map((i) => i.working_title),
+      });
 
       if (sourceIdeas.length === 0) {
         throw new Error("No source ideas found for the given generation number");
@@ -644,6 +861,11 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
       // ── Step 2: Derive seed queries from original ideas ─────────────────────
       const seedQueries = deriveRegenerationSeedQueries(sourceIdeas);
 
+      console.info(LOG_PREFIX, "regeneration:step2 seed queries", {
+        seedQueryCount: seedQueries.length,
+        seedQueries,
+      });
+
       // ── Step 3: Retrieve tagged fragments ───────────────────────────────────
       let fragments: TaggedFragment[] = [];
       if (seedQueries.length > 0) {
@@ -652,8 +874,18 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
 
       const tagMap = new Map<string, string>(fragments.map((f) => [f.tag, f.documentVersionId]));
 
+      console.info(LOG_PREFIX, "regeneration:step3 fragments retrieved", {
+        fragmentCount: fragments.length,
+        tags: fragments.map((f) => f.tag),
+      });
+
       // ── Step 4: Resolve business profile ────────────────────────────────────
       const profile = await resolveBusinessProfile(supabase, userId);
+
+      console.info(LOG_PREFIX, "regeneration:step4 profile resolved", {
+        toneOfVoice: profile.toneOfVoice,
+        archetype: profile.archetype,
+      });
 
       // Store debug info in background_operations.input_ref
       await supabase
@@ -683,20 +915,35 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
         hint: params.hint,
       });
 
+      console.info(LOG_PREFIX, "regeneration:step5 prompts built", {
+        systemPromptLength: systemPrompt.length,
+        userPromptLength: userPrompt.length,
+        batchSize,
+      });
+
       // ── Step 6: Single structured-output LLM call (with one auto-retry) ─────
       yield { type: "generating" };
+
+      console.info(LOG_PREFIX, "regeneration:step6 calling LLM (attempt 1)");
 
       let rawText: string;
       try {
         rawText = await callLLM(provider, systemPrompt, userPrompt, model);
       } catch (err) {
+        console.info(LOG_PREFIX, "regeneration:step6 LLM call failed", {
+          error: err instanceof Error ? err.message : String(err),
+        });
         throw new Error(`LLM call failed: ${err instanceof Error ? err.message : String(err)}`);
       }
 
       // ── Step 7: Validate output (retry once on failure) ──────────────────────
+      console.info(LOG_PREFIX, "regeneration:step7 validating output (attempt 1)");
       let regenResult = parseAndValidate(rawText);
       if (!regenResult.success) {
         const firstReason = regenResult.reason;
+        console.info(LOG_PREFIX, "regeneration:step7 validation failed, retrying LLM (attempt 2)", {
+          firstReason,
+        });
         try {
           rawText = await callLLM(provider, systemPrompt, userPrompt, model);
         } catch (err) {
@@ -712,10 +959,20 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
         }
       }
 
+      console.info(LOG_PREFIX, "regeneration:step7 validation passed", {
+        ideaCount: regenResult.data.ideas.length,
+        ideaTitles: regenResult.data.ideas.map((i) => i.working_title),
+      });
+
       // ── Step 8: Persist ideas + fragment references ──────────────────────────
       yield { type: "saving" };
 
       const generationNumber = await autoIncrementGenerationNumber(supabase, campaignId);
+      console.info(LOG_PREFIX, "regeneration:step8 persisting", {
+        generationNumber,
+        ideaCount: regenResult.data.ideas.length,
+      });
+
       const ideaIds = await persistIdeas(
         supabase,
         campaignId,
@@ -726,10 +983,16 @@ export function createRegenerationService(deps: GenerationServiceDeps) {
         params.hint,
       );
 
+      console.info(LOG_PREFIX, "regeneration:done", { ideaIds });
+
       // ── Step 9: Done ─────────────────────────────────────────────────────────
       yield { type: "done", ideaIds };
     } catch (err) {
       const message = err instanceof Error ? err.message : "Regeneration failed";
+      console.info(LOG_PREFIX, "regeneration:error", {
+        error: message,
+        stack: err instanceof Error ? err.stack : undefined,
+      });
       yield { type: "error", error: message };
     }
   }
