@@ -14,16 +14,16 @@ export const IdeaSchema = z.object({
   // models on OpenRouter return null. Both are accepted.
   hook: z.string().optional().nullable(),
   key_points: z.array(z.string()).optional().nullable(),
-  /** Direct quotes from source documents — at least one required per idea. */
-  key_quotes: z.array(z.string()).min(1),
+  /** Direct quotes from source documents — empty when no fragments available. */
+  key_quotes: z.array(z.string()),
   proposed_flow: z.string().optional().nullable(),
   insights_conclusions: z.string().optional().nullable(),
   call_to_action: z.string().optional().nullable(),
   storytelling_angle: z.string().optional().nullable(),
   target_audience_note: z.string().optional().nullable(),
   content_format_suggestion: z.string().optional().nullable(),
-  /** Source fragment references — at least one required per idea. */
-  source_references: z.array(SourceReferenceSchema).min(1),
+  /** Source fragment references — empty when no fragments available. */
+  source_references: z.array(SourceReferenceSchema),
 });
 
 export const IdeaOutputSchema = z.object({
@@ -50,7 +50,7 @@ export const IdeaOutputJsonSchema: Record<string, unknown> = {
           // OpenAI-family models return null for absent optional fields under strict output.
           hook: { type: ["string", "null"] },
           key_points: { type: ["array", "null"], items: { type: "string" } },
-          key_quotes: { type: "array", items: { type: "string" }, minItems: 1 },
+          key_quotes: { type: "array", items: { type: "string" } },
           proposed_flow: { type: ["string", "null"] },
           insights_conclusions: { type: ["string", "null"] },
           call_to_action: { type: ["string", "null"] },
@@ -68,7 +68,6 @@ export const IdeaOutputJsonSchema: Record<string, unknown> = {
               required: ["tag", "quote_snippet"],
               additionalProperties: false,
             },
-            minItems: 1,
           },
         },
         required: ["working_title", "key_quotes", "source_references"],

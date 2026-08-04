@@ -274,12 +274,14 @@ export async function persistIdeas(
       })
       .filter((r): r is NonNullable<typeof r> => r !== null);
 
-    if (resolvedRefs.length === 0) {
+    if (resolvedRefs.length === 0 && idea.source_references.length > 0) {
+      // Ideas with source_references that ALL resolve to unknown tags are hallucinated — skip.
+      // Ideas with no source_references at all (no fragments available) are valid — let through.
       console.info(LOG_PREFIX, "persistIdeas:skipped (all tags unmatched)", {
         title: idea.working_title,
         requestedTags: idea.source_references.map((r) => r.tag),
       });
-      continue; // All tags hallucinated — do not persist this idea
+      continue;
     }
 
     console.info(LOG_PREFIX, "persistIdeas:inserting", {

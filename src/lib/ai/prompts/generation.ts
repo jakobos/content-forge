@@ -65,9 +65,9 @@ Respond with a single JSON object matching this schema (no markdown fences, raw 
 
 ## Critical Rules
 
-- Every idea MUST cite at least one fragment tag in source_references.
-- key_quotes must be actual quotes copied verbatim from the fragment text — no paraphrasing.
-- Each idea must be distinct: different angle, different source fragments, different call to action.
+- If source fragments are provided, every idea MUST cite at least one fragment tag in source_references and include verbatim key_quotes from those fragments — no paraphrasing.
+- If NO source fragments are provided, return empty arrays for source_references and key_quotes.
+- Each idea must be distinct: different angle, different call to action.
 - Output raw JSON only — no markdown code fences, no commentary before or after the JSON.`;
 }
 
