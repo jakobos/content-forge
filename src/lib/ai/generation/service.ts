@@ -13,6 +13,7 @@ import {
   ManualIdeaOutputJsonSchema,
 } from "@/lib/ai/prompts/schemas";
 import { deriveSeedQueries, retrieveTaggedFragments } from "./retrieval";
+import { jsonrepair } from "jsonrepair";
 import type { TaggedFragment } from "./retrieval";
 import { resolveBusinessProfile } from "./profile";
 
@@ -96,6 +97,9 @@ async function autoIncrementGenerationNumber(supabase: SupabaseClient<Database>,
 
 /**
  * Parse JSON from LLM output and strip markdown fences if present.
+ * Falls back to `jsonrepair` when `JSON.parse` fails — this handles unescaped
+ * double quotes that Anthropic models produce in non-English text (e.g. Polish
+ * „…" quotation marks where the closing quote is an ASCII " that breaks JSON).
  */
 function stripAndParse(text: string): unknown {
   const stripped = text
@@ -103,7 +107,13 @@ function stripAndParse(text: string): unknown {
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/i, "")
     .trim();
-  return JSON.parse(stripped) as unknown;
+  try {
+    return JSON.parse(stripped) as unknown;
+  } catch {
+    console.info(LOG_PREFIX, "JSON.parse failed, attempting jsonrepair");
+    const repaired = jsonrepair(stripped);
+    return JSON.parse(repaired) as unknown;
+  }
 }
 
 type ParseResult<T> = { success: true; data: T } | { success: false; reason: string };
